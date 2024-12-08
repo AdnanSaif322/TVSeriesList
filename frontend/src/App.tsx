@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import React, { FormEvent } from "react";
+import { FormEvent } from "react";
 
 interface TvSeries {
   id: string;

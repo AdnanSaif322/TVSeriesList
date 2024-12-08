@@ -6,7 +6,14 @@ import seriesController from "./controllers/series.js";
 
 const app = new Hono();
 
-app.use("/api/*", cors());
+app.use(
+  "/api/*",
+  cors({
+    origin: "*", // Allow all origins or specify your frontend's URL like 'http://localhost:5173'
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow these HTTP methods
+    allowHeaders: ["Content-Type", "Authorization"], // Allow any necessary headers
+  })
+);
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
