@@ -25,7 +25,7 @@ function App() {
       .catch((err) => console.error(err));
   }, []);
 
-  const handleEdit = (series) => {
+  const handleEdit = (series: TvSeries) => {
     setEditingId(series.id); // Set ID to determine edit state
     setName(series.name);
     setGenre(series.genre);
@@ -69,6 +69,11 @@ function App() {
   };
 
   const handleDelete = (id: string) => {
+    const userConfirmed = window.confirm(
+      "Are you sure you want to delete this TV series?"
+    );
+
+    if (!userConfirmed) return; // Exit if the user cancels the action
     fetch(`${API_URL}/${id}`, { method: "DELETE" })
       .then(() =>
         setTvSeries((prev) => prev.filter((series) => series.id !== id))
@@ -109,19 +114,7 @@ function App() {
           <li key={series.id}>
             {series.name} - {series.genre} ({series.year})
             <button onClick={() => handleEdit(series)}>Edit</button>
-            <button
-              onClick={() =>
-                fetch(`${API_URL}/${series.id}`, { method: "DELETE" })
-                  .then(() =>
-                    setTvSeries((prev) =>
-                      prev.filter((s) => s.id !== series.id)
-                    )
-                  )
-                  .catch((err) => console.error(err))
-              }
-            >
-              Delete
-            </button>
+            <button onClick={() => handleDelete(series.id)}>Delete</button>
           </li>
         ))}
       </ul>
