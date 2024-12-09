@@ -15,9 +15,16 @@ app.post("/", async (c) => {
   const db = new SupabaseService(c);
   const { name, genre, year } = await c.req.json();
 
+  if (!name || !genre || !year) {
+    return c.json(
+      { message: "All fields (name, genre, and year) are required." },
+      400
+    );
+  }
+
   const data = await db.insertData("tv_series", { name, genre, year });
 
-  return c.json({ message: "TV series successfully inserted" }, 201);
+  return c.json({ message: "TV series successfully inserted", data }, 201);
 });
 
 //edit tv series
@@ -26,16 +33,16 @@ app.put("/:id", async (c) => {
   const id = c.req.param("id");
   const { name, genre, year } = await c.req.json();
 
-  const upddates: any = {};
+  const upddates: Record<string, any> = {};
   if (name) upddates.name = name;
   if (genre) upddates.genre = genre;
   if (year) upddates.year = year;
 
-  const data = await db.editData("tv_series", upddates, { id });
+  const { data, error } = await db.editData("tv_series", upddates, { id });
 
-  if (!data) return c.json({ message: "TV series not found" }, 404);
+  if (error || !data) return c.json({ message: "TV series not found" }, 404);
 
-  return c.json({ message: "TV series successfully updated" }, 200);
+  return c.json({ message: "TV series successfully updated", data }, 200);
 });
 
 //Delete a TV series
@@ -43,11 +50,15 @@ app.delete("/:id", async (c) => {
   const db = new SupabaseService(c);
   const id = c.req.param("id");
 
-  const data = await db.deleteData("tv_series", { id });
+  const { data, error } = await db.deleteData("tv_series", { id });
 
-  if (!data) return c.json({ message: "TV series not found" }, 404);
+  if (error || !data || data.length === 0)
+    return c.json(
+      { message: "TV series not found or could not be deleted" },
+      404
+    );
 
-  return c.json({ message: "TV series successfully deleted" }, 200);
+  return c.json({ message: "TV series successfully deleted", data }, 200);
 });
 
 export default app;

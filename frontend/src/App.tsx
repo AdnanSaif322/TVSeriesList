@@ -16,17 +16,31 @@ function App() {
   const [year, setYear] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const API_URL = "http://localhost:3000"; // Hono backend URL
+  const API_URL = "http://localhost:3000/series"; // Hono backend URL
 
   useEffect(() => {
-    fetch(`${API_URL}/`)
+    fetch(`${API_URL}`)
       .then((res) => res.json())
       .then((data) => setTvSeries(data.data))
       .catch((err) => console.error(err));
   }, []);
 
+  const handleEdit = (series) => {
+    setEditingId(series.id); // Set ID to determine edit state
+    setName(series.name);
+    setGenre(series.genre);
+    setYear(series.year);
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate inputs
+    if (!name || !genre || !year) {
+      alert("Please fill in all fields: Name, Genre, and Year are required.");
+      return; // Stop submission if any field is empty
+    }
+
     const method = editingId ? "PUT" : "POST";
     const url = editingId ? `${API_URL}/${editingId}` : API_URL;
     const payload = { name, genre, year };
@@ -94,8 +108,20 @@ function App() {
         {tvSeries.map((series) => (
           <li key={series.id}>
             {series.name} - {series.genre} ({series.year})
-            <button onClick={() => setEditingId(series.id)}>Edit</button>
-            <button onClick={() => handleDelete(series.id)}>Delete</button>
+            <button onClick={() => handleEdit(series)}>Edit</button>
+            <button
+              onClick={() =>
+                fetch(`${API_URL}/${series.id}`, { method: "DELETE" })
+                  .then(() =>
+                    setTvSeries((prev) =>
+                      prev.filter((s) => s.id !== series.id)
+                    )
+                  )
+                  .catch((err) => console.error(err))
+              }
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>

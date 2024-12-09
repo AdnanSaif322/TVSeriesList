@@ -6,17 +6,19 @@ import seriesController from "./controllers/series.js";
 
 const app = new Hono();
 
+// Apply CORS middleware globally
 app.use(
-  "/api/*",
   cors({
-    origin: "*", // Allow all origins or specify your frontend's URL like 'http://localhost:5173'
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allow these HTTP methods
-    allowHeaders: ["Content-Type", "Authorization"], // Allow any necessary headers
+    origin: "http://localhost:5173", // Replace with your frontend's URL
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Include HTTP methods
+    allowHeaders: ["Content-Type", "Authorization"], // Allow necessary headers
   })
 );
+
 app.get("/", (c) => {
-  return c.text("Hello Hono!");
+  return c.json({ message: "Hello Hono!" });
 });
+
 app.route("/series", seriesController);
 //server start
 const port = 3000;

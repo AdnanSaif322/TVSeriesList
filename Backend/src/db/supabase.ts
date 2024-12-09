@@ -35,27 +35,39 @@ class SupabaseService {
     return data;
   }
   // Update data in a table based on condition
-  async editData(table: any, payload: any, condition: any) {
+  async editData(
+    table: string,
+    updates: Record<string, any>,
+    filters: Record<string, any>
+  ) {
     const { data, error } = await this.client
       .from(table)
-      .update(payload)
-      .match(condition);
+      .update(updates)
+      .match(filters)
+      .select();
+
     if (error) {
-      throw error;
+      console.error("Error updating data:", error);
+      return { data: null, error };
     }
-    return data;
+
+    return { data, error: null };
   }
 
   // Delete data from a table based on condition
-  async deleteData(table: any, condition: any) {
+  async deleteData(table: string, condition: Record<string, any>) {
     const { data, error } = await this.client
       .from(table)
       .delete()
-      .match(condition);
+      .match(condition)
+      .select(); // Ensures the deleted record is returned
+
     if (error) {
-      throw error;
+      console.error("Error deleting data:", error);
+      return { data: null, error };
     }
-    return data;
+
+    return { data, error: null };
   }
 }
 
