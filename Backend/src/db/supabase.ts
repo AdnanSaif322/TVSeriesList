@@ -27,12 +27,15 @@ class SupabaseService {
     return data;
   }
 
-  async insertData(table: any, payload: any) {
-    const { data, error } = await this.client.from(table).insert(payload);
+  async insertData(table: string, payload: Record<string, any>) {
+    const { data, error } = await this.client
+      .from(table)
+      .insert(payload)
+      .select();
     if (error) {
       throw error;
     }
-    return data;
+    return data[0];
   }
   // Update data in a table based on condition
   async editData(

@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
-import { FormEvent } from "react";
-
-interface TvSeries {
-  id: string;
-  name: string;
-  genre: string;
-  year: string;
-}
+import {
+  fetchTvSeries,
+  addTvSeries,
+  updateTvSeries,
+  deleteTvSeries,
+} from "./services/api";
+import { TvSeries } from "./types/tvSeries";
+import TvSeriesForm from "./components/TvSeriesForm";
+import TvSeriesList from "./components/TvSeriesList";
 
 function App() {
   const [tvSeries, setTvSeries] = useState<TvSeries[]>([]);
@@ -16,109 +17,84 @@ function App() {
   const [year, setYear] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const API_URL = "http://localhost:3000/series"; // Hono backend URL
-
   useEffect(() => {
-    fetch(`${API_URL}`)
-      .then((res) => res.json())
-      .then((data) => setTvSeries(data.data))
-      .catch((err) => console.error(err));
+    //console.log("Current TV series List:", tvSeries); //log the state after its updated
+    fetchTvSeries().then(setTvSeries).catch(console.error);
   }, []);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!name || !genre || !year) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    const payload = { name, genre, year };
+
+    if (editingId) {
+      updateTvSeries(editingId, payload)
+        .then((updatedSeries) => {
+          setTvSeries((prev) =>
+            prev.map((series) =>
+              series.id === editingId ? updatedSeries : series
+            )
+          );
+          resetForm();
+        })
+        .catch(console.error);
+    } else {
+      addTvSeries(payload)
+        .then((newSeries) => {
+          setTvSeries((prev) => [...prev, newSeries]);
+          resetForm();
+        })
+        .catch(console.error);
+    }
+  };
 
   const handleEdit = (series: TvSeries) => {
-    setEditingId(series.id); // Set ID to determine edit state
+    setEditingId(series.id);
     setName(series.name);
     setGenre(series.genre);
     setYear(series.year);
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // Validate inputs
-    if (!name || !genre || !year) {
-      alert("Please fill in all fields: Name, Genre, and Year are required.");
-      return; // Stop submission if any field is empty
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this TV series?")) {
+      deleteTvSeries(id)
+        .then(() =>
+          setTvSeries((prev) => prev.filter((series) => series.id !== id))
+        )
+        .catch(console.error);
     }
-
-    const method = editingId ? "PUT" : "POST";
-    const url = editingId ? `${API_URL}/${editingId}` : API_URL;
-    const payload = { name, genre, year };
-
-    fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        setTvSeries(
-          (prev) =>
-            editingId
-              ? prev.map((series) =>
-                  series.id === editingId ? { ...series, ...payload } : series
-                )
-              : [...prev, { id: `${Date.now()}`, ...payload }] // Generate a new ID dynamically
-        );
-        setName("");
-        setGenre("");
-        setYear("");
-        setEditingId(null);
-      })
-      .catch((err) => console.error(err));
   };
 
-  const handleDelete = (id: string) => {
-    const userConfirmed = window.confirm(
-      "Are you sure you want to delete this TV series?"
-    );
-
-    if (!userConfirmed) return; // Exit if the user cancels the action
-    fetch(`${API_URL}/${id}`, { method: "DELETE" })
-      .then(() =>
-        setTvSeries((prev) => prev.filter((series) => series.id !== id))
-      )
-      .catch((err) => console.error(err));
+  const resetForm = () => {
+    setName("");
+    setGenre("");
+    setYear("");
+    setEditingId(null);
   };
 
   return (
     <div>
       <h1>TV Series List</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Genre"
-          value={genre}
-          onChange={(e) => setGenre(e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Year"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-          required
-        />
-        <button type="submit">{editingId ? "Update" : "Add"}</button>
-      </form>
-
-      <ul>
-        {tvSeries.map((series) => (
-          <li key={series.id}>
-            {series.name} - {series.genre} ({series.year})
-            <button onClick={() => handleEdit(series)}>Edit</button>
-            <button onClick={() => handleDelete(series.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <TvSeriesForm
+        name={name}
+        genre={genre}
+        year={year}
+        editingId={editingId}
+        setName={setName}
+        setGenre={setGenre}
+        setYear={setYear}
+        handleSubmit={handleSubmit}
+      />
+      <TvSeriesList
+        tvSeries={tvSeries}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+      />
     </div>
   );
 }
+
 export default App;
