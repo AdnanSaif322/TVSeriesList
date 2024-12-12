@@ -18,9 +18,23 @@ function App() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
-    //console.log("Current TV series List:", tvSeries); //log the state after its updated
-    fetchTvSeries().then(setTvSeries).catch(console.error);
+    fetchTvSeries()
+      .then((fetchedSeries) => {
+        console.log("Fetched TV Series:", fetchedSeries);
+
+        if (Array.isArray(fetchedSeries)) {
+          setTvSeries(fetchedSeries.filter((series) => series !== undefined));
+        } else {
+          console.error("Invalid fetched series:", fetchedSeries);
+          setTvSeries([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to fetch TV series:", error);
+        setTvSeries([]);
+      });
   }, []);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!name || !genre || !year) {
@@ -35,7 +49,7 @@ function App() {
         .then((updatedSeries) => {
           setTvSeries((prev) =>
             prev.map((series) =>
-              series.id === editingId ? updatedSeries : series
+              series.id === parseInt(editingId) ? updatedSeries : series
             )
           );
           resetForm();
@@ -47,7 +61,10 @@ function App() {
           setTvSeries((prev) => [...prev, newSeries]);
           resetForm();
         })
-        .catch(console.error);
+        .catch((error) => {
+          console.error("Error adding series:", error);
+          alert("Failed to add the series. Please try again.");
+        });
     }
   };
 

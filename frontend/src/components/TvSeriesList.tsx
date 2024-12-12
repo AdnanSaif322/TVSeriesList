@@ -8,19 +8,19 @@ interface Props {
 
 const TvSeriesList = ({ tvSeries, handleEdit, handleDelete }: Props) => {
   if (!tvSeries || tvSeries.length === 0) {
-    return <p>No TV series available</p>; // Display a message when there are no TV series
+    return <p>No TV series available</p>; // Show message if list is empty
   }
 
   return (
     <ul>
-      {tvSeries.map((series) => {
-        if (!series || !series.name) {
-          console.warn("Skipping invalid series:", series); // Log any invalid series
-          return null; // Skip rendering if series is invalid
+      {tvSeries.map((series, index) => {
+        if (!series || typeof series !== "object" || !series.name) {
+          console.warn("Skipping invalid series:", series);
+          return null; // Skip rendering invalid series
         }
 
         return (
-          <li key={series.id}>
+          <li key={series.id || index}>
             {series.name} - {series.genre} ({series.year})
             <button onClick={() => handleEdit(series)}>Edit</button>
             <button onClick={() => handleDelete(series.id)}>Delete</button>
