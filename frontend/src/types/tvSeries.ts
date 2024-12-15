@@ -1,6 +1,6 @@
 export interface TvSeries {
-  id: string;
+  id: number;
   name: string;
   genre: string;
-  year: string;
+  year: number;
 }
