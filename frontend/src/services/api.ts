@@ -2,6 +2,11 @@ import { TvSeries } from "../types/tvSeries";
 
 const API_URL = "http://localhost:3000/series";
 
+interface ApiResponse<T> {
+  data: T;
+  message: string;
+}
+
 export const fetchTvSeries = async (): Promise<TvSeries[]> => {
   const res = await fetch(API_URL);
   const data = await res.json();
@@ -11,7 +16,7 @@ export const fetchTvSeries = async (): Promise<TvSeries[]> => {
   }
 
   // Validate each series object
-  const validSeries = data.data.filter((series) => {
+  const validSeries = data.data.filter((series: TvSeries) => {
     return (
       series &&
       typeof series.id === "number" &&
@@ -50,7 +55,7 @@ export const addTvSeries = async (
 };
 
 export const updateTvSeries = async (
-  id: string,
+  id: number,
   updates: Partial<TvSeries>
 ): Promise<TvSeries> => {
   try {
@@ -60,10 +65,13 @@ export const updateTvSeries = async (
       body: JSON.stringify(updates),
     });
 
-    const response = await res.json();
+    if (!res.ok) {
+      throw new Error(`Failed to update TV series. Status: ${res.status}`);
+    }
+
+    const response: ApiResponse<TvSeries> = await res.json();
     console.log("Raw API Response:", response);
 
-    // Check if `data` is an object and contains valid series data
     if (response && response.data && typeof response.data === "object") {
       return response.data;
     }
@@ -75,7 +83,7 @@ export const updateTvSeries = async (
   }
 };
 
-export const deleteTvSeries = async (id: string): Promise<void> => {
+export const deleteTvSeries = async (id: number): Promise<void> => {
   try {
     const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
 

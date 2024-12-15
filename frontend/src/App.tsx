@@ -14,8 +14,8 @@ function App() {
   const [tvSeries, setTvSeries] = useState<TvSeries[]>([]);
   const [name, setName] = useState("");
   const [genre, setGenre] = useState("");
-  const [year, setYear] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [year, setYear] = useState<number>(0);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchTvSeries()
@@ -44,17 +44,21 @@ function App() {
 
     const payload = { name, genre, year };
 
-    if (editingId) {
-      updateTvSeries(editingId, payload)
+    if (editingId !== null) {
+      updateTvSeries(editingId, payload) // Convert editingId to number
         .then((updatedSeries) => {
           setTvSeries((prev) =>
-            prev.map((series) =>
-              series.id === parseInt(editingId) ? updatedSeries : series
+            prev.map(
+              (series) =>
+                series.id === Number(editingId) ? updatedSeries : series // Ensure id comparison is number
             )
           );
           resetForm();
         })
-        .catch(console.error);
+        .catch((error) => {
+          console.error("Error updating series:", error);
+          alert("Failed to update the series. Please try again.");
+        });
     } else {
       addTvSeries(payload)
         .then((newSeries) => {
@@ -69,13 +73,17 @@ function App() {
   };
 
   const handleEdit = (series: TvSeries) => {
-    setEditingId(series.id);
+    setEditingId(
+      typeof series.id === "string" ? parseInt(series.id, 10) : series.id
+    );
     setName(series.name);
     setGenre(series.genre);
-    setYear(series.year);
+    setYear(
+      typeof series.year === "string" ? parseInt(series.year, 10) : series.year
+    );
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     if (window.confirm("Are you sure you want to delete this TV series?")) {
       deleteTvSeries(id)
         .then(() =>
@@ -88,7 +96,7 @@ function App() {
   const resetForm = () => {
     setName("");
     setGenre("");
-    setYear("");
+    setYear(0);
     setEditingId(null);
   };
 

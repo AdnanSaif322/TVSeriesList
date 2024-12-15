@@ -3,11 +3,11 @@ import React, { FormEvent } from "react";
 interface Props {
   name: string;
   genre: string;
-  year: string;
-  editingId: string | null;
+  year: number;
+  editingId: number | null;
   setName: (name: string) => void;
   setGenre: (genre: string) => void;
-  setYear: (year: string) => void;
+  setYear: (year: number) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
 }
 
@@ -41,7 +41,7 @@ const TvSeriesForm: React.FC<Props> = ({
         type="number"
         placeholder="Year"
         value={year}
-        onChange={(e) => setYear(e.target.value)}
+        onChange={(e) => setYear(Number(e.target.value))}
         required
       />
       <button type="submit">{editingId ? "Update" : "Add"}</button>
