@@ -1,11 +1,8 @@
-import { TvSeries } from "../types/tvSeries";
+import { ApiResponse, TvSeries, TvSeriesApiResult } from "../types/tvSeries";
+import { TvSeriesSearchResult } from "../types/tvSeries";
 
 const API_URL = "http://localhost:3000/series";
-
-interface ApiResponse<T> {
-  data: T;
-  message: string;
-}
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 export const fetchTvSeries = async (): Promise<TvSeries[]> => {
   const res = await fetch(API_URL);
@@ -27,6 +24,38 @@ export const fetchTvSeries = async (): Promise<TvSeries[]> => {
   });
 
   return validSeries;
+};
+
+export const searchTvSeries = async (
+  query: string
+): Promise<TvSeriesSearchResult[]> => {
+  try {
+    if (!TMDB_API_KEY) {
+      throw new Error(
+        "API key is missing. Make sure it's defined in your .env file."
+      );
+    }
+
+    const API_URL = `https://api.themoviedb.org/3/search/tv?query=${encodeURIComponent(
+      query
+    )}&api_key=${TMDB_API_KEY}`;
+    console.log("API Key:", TMDB_API_KEY);
+    const res = await fetch(API_URL);
+    const response = await res.json();
+
+    if (response && response.results) {
+      return response.results.map((result: TvSeriesApiResult) => ({
+        name: result.name,
+        genre: result.genre_ids?.join(", ") || "Unknown", // Map genre IDs if needed
+        year: result.first_air_date?.split("-")[0] || "Unknown",
+        id: result.id,
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching search results:", error);
+    return [];
+  }
 };
 
 export const addTvSeries = async (

@@ -14,7 +14,7 @@ function App() {
   const [tvSeries, setTvSeries] = useState<TvSeries[]>([]);
   const [name, setName] = useState("");
   const [genre, setGenre] = useState("");
-  const [year, setYear] = useState<number>(0);
+  const [year, setYear] = useState<number | null>(0);
   const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
