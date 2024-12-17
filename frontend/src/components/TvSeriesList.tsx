@@ -1,4 +1,5 @@
 import { TvSeries } from "../types/tvSeries";
+import AnimeCard from "./AnimeCard";
 
 interface Props {
   tvSeries: TvSeries[];
@@ -19,29 +20,41 @@ const TvSeriesList = ({ tvSeries, handleEdit, handleDelete }: Props) => {
   // console.log("Flattened tvSeries data:", flattenedSeries);
 
   return (
-    <ul>
-      {flattenedSeries.map((series, index) => {
-        // Validate each series object
-        if (
-          !series ||
-          typeof series !== "object" ||
-          !series.id ||
-          !series.name ||
-          !series.year
-        ) {
-          console.warn("Skipping invalid series:", series);
-          return null;
-        }
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
+      {flattenedSeries.map((series, index) => (
+        <AnimeCard
+          key={index}
+          title={series.name}
+          imageUrl={series.imageUrl}
+          genre={series.genre}
+          rating={series.rating}
+        />
+      ))}
+    </div>
 
-        return (
-          <li key={series.id || index}>
-            {series.name} - {series.genre} ({series.year})
-            <button onClick={() => handleEdit(series)}>Edit</button>
-            <button onClick={() => handleDelete(series.id)}>Delete</button>
-          </li>
-        );
-      })}
-    </ul>
+    // <ul>
+    //   {flattenedSeries.map((series, index) => {
+    //     // Validate each series object
+    //     if (
+    //       !series ||
+    //       typeof series !== "object" ||
+    //       !series.id ||
+    //       !series.name ||
+    //       !series.year
+    //     ) {
+    //       console.warn("Skipping invalid series:", series);
+    //       return null;
+    //     }
+
+    //     return (
+    //       <li key={series.id || index}>
+    //         {series.name} - {series.genre} ({series.year})
+    //         <button onClick={() => handleEdit(series)}>Edit</button>
+    //         <button onClick={() => handleDelete(series.id)}>Delete</button>
+    //       </li>
+    //     );
+    //   })}
+    // </ul>
   );
 };
 

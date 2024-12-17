@@ -40,3 +40,10 @@ export interface Genre {
   id: number;
   name: string;
 }
+
+export interface AnimeCardProps {
+  title: string;
+  imageUrl: string;
+  genre: string;
+  rating: number;
+}
