@@ -30,8 +30,13 @@ export interface Props {
 }
 
 export interface TvSeriesApiResult {
-  name: string;
-  genre_ids?: number[]; // Assuming genre_ids is an array of numbers
-  first_air_date?: string; // A date string in the format "YYYY-MM-DD"
   id: number;
+  name: string;
+  genre_ids: number[];
+  first_air_date: string;
+}
+
+export interface Genre {
+  id: number;
+  name: string;
 }

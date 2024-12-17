@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     fetchTvSeries()
       .then((fetchedSeries) => {
-        console.log("Fetched TV Series:", fetchedSeries);
+        //console.log("Fetched TV Series:", fetchedSeries);
 
         if (Array.isArray(fetchedSeries)) {
           setTvSeries(fetchedSeries.filter((series) => series !== undefined));

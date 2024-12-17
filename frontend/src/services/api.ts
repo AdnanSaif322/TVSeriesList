@@ -1,4 +1,9 @@
-import { ApiResponse, TvSeries, TvSeriesApiResult } from "../types/tvSeries";
+import {
+  ApiResponse,
+  Genre,
+  TvSeries,
+  TvSeriesApiResult,
+} from "../types/tvSeries";
 import { TvSeriesSearchResult } from "../types/tvSeries";
 
 const API_URL = "http://localhost:3000/series";
@@ -26,6 +31,21 @@ export const fetchTvSeries = async (): Promise<TvSeries[]> => {
   return validSeries;
 };
 
+// Fetch genres from TMDb
+const fetchGenres = async (): Promise<Genre[]> => {
+  try {
+    const API_KEY = TMDB_API_KEY; // Use your API key here
+    const response = await fetch(
+      `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`
+    );
+    const data = await response.json();
+    return data.genres;
+  } catch (error) {
+    console.error("Error fetching genres:", error);
+    return [];
+  }
+};
+
 export const searchTvSeries = async (
   query: string
 ): Promise<TvSeriesSearchResult[]> => {
@@ -39,17 +59,27 @@ export const searchTvSeries = async (
     const API_URL = `https://api.themoviedb.org/3/search/tv?query=${encodeURIComponent(
       query
     )}&api_key=${TMDB_API_KEY}`;
-    console.log("API Key:", TMDB_API_KEY);
+    //console.log("API Key:", TMDB_API_KEY);
     const res = await fetch(API_URL);
     const response = await res.json();
 
+    //Fetch the genre list
+    const genres = await fetchGenres();
+
     if (response && response.results) {
-      return response.results.map((result: TvSeriesApiResult) => ({
-        name: result.name,
-        genre: result.genre_ids?.join(", ") || "Unknown", // Map genre IDs if needed
-        year: result.first_air_date?.split("-")[0] || "Unknown",
-        id: result.id,
-      }));
+      return response.results.map((result: TvSeriesApiResult) => {
+        // Map genre IDs to names
+        const genreNames = result.genre_ids
+          .map((id) => genres.find((genre) => genre.id === id)?.name)
+          .filter((name) => name); // Filter out undefined values
+
+        return {
+          name: result.name,
+          genre: genreNames.join(", ") || "Unknown", // Join genre names
+          year: result.first_air_date?.split("-")[0] || "Unknown",
+          id: result.id,
+        };
+      });
     }
     return [];
   } catch (error) {
@@ -69,7 +99,7 @@ export const addTvSeries = async (
     });
 
     const response = await res.json();
-    console.log("Raw API Response:", response);
+    //console.log("Raw API Response:", response);
 
     // Check if `data` is an object and contains valid series data
     if (response && response.data && typeof response.data === "object") {

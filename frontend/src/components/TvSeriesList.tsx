@@ -16,7 +16,7 @@ const TvSeriesList = ({ tvSeries, handleEdit, handleDelete }: Props) => {
   }
 
   // Logging for debugging
-  console.log("Flattened tvSeries data:", flattenedSeries);
+  // console.log("Flattened tvSeries data:", flattenedSeries);
 
   return (
     <ul>
