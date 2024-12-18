@@ -13,16 +13,16 @@ app.get("/", async (c) => {
 // Create a new tv series
 app.post("/", async (c) => {
   const db = new SupabaseService(c);
-  const { name, genre, year } = await c.req.json();
+  const { name, genre, year, rating } = await c.req.json();
 
-  if (!name || !genre || !year) {
+  if (!name || !genre || !year || !rating) {
     return c.json(
-      { message: "All fields (name, genre, and year) are required." },
+      { message: "All fields (name, genre, year, and rating) are required." },
       400
     );
   }
 
-  const data = await db.insertData("tv_series", { name, genre, year });
+  const data = await db.insertData("tv_series", { name, genre, year, rating });
 
   return c.json({ message: "TV series successfully inserted", data }, 201);
 });
@@ -31,12 +31,13 @@ app.post("/", async (c) => {
 app.put("/:id", async (c) => {
   const db = new SupabaseService(c);
   const id = c.req.param("id");
-  const { name, genre, year } = await c.req.json();
+  const { name, genre, year, rating } = await c.req.json();
 
   const upddates: Record<string, any> = {};
   if (name) upddates.name = name;
   if (genre) upddates.genre = genre;
   if (year) upddates.year = year;
+  if (rating) upddates.rating = rating;
 
   const { data, error } = await db.editData("tv_series", upddates, { id });
 

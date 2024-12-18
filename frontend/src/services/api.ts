@@ -24,7 +24,8 @@ export const fetchTvSeries = async (): Promise<TvSeries[]> => {
       typeof series.id === "number" &&
       typeof series.name === "string" &&
       typeof series.genre === "string" &&
-      typeof series.year === "number"
+      typeof series.year === "number" &&
+      typeof series.rating === "number"
     );
   });
 
@@ -77,6 +78,7 @@ export const searchTvSeries = async (
           name: result.name,
           genre: genreNames.join(", ") || "Unknown", // Join genre names
           year: result.first_air_date?.split("-")[0] || "Unknown",
+          rating: result.vote_average,
           id: result.id,
         };
       });
@@ -99,7 +101,7 @@ export const addTvSeries = async (
     });
 
     const response = await res.json();
-    //console.log("Raw API Response:", response);
+    console.log("Raw API Response:", response);
 
     // Check if `data` is an object and contains valid series data
     if (response && response.data && typeof response.data === "object") {

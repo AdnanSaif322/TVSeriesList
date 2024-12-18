@@ -15,6 +15,7 @@ function App() {
   const [name, setName] = useState("");
   const [genre, setGenre] = useState("");
   const [year, setYear] = useState<number | null>(0);
+  const [vote_average, setVote_average] = useState<number | null>(0);
   const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -37,12 +38,12 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!name || !genre || !year) {
+    if (!name || !genre || !year || !vote_average) {
       alert("Please fill in all fields.");
       return;
     }
 
-    const payload = { name, genre, year };
+    const payload = { name, genre, year, vote_average };
 
     if (editingId !== null) {
       updateTvSeries(editingId, payload) // Convert editingId to number
@@ -97,20 +98,23 @@ function App() {
     setName("");
     setGenre("");
     setYear(0);
+    setVote_average(0);
     setEditingId(null);
   };
 
   return (
     <div>
-      <h1>TV Series List</h1>
+      <h1>Series List</h1>
       <TvSeriesForm
         name={name}
         genre={genre}
         year={year}
+        vote_average={vote_average}
         editingId={editingId}
         setName={setName}
         setGenre={setGenre}
         setYear={setYear}
+        setRating={setVote_average}
         handleSubmit={handleSubmit}
       />
       <TvSeriesList

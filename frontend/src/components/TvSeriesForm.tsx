@@ -6,10 +6,12 @@ const TvSeriesForm: React.FC<Props> = ({
   name,
   genre,
   year,
+  vote_average,
   editingId,
   setName,
   setGenre,
   setYear,
+  setVote_average,
   handleSubmit,
 }) => {
   const [searchResults, setSearchResults] = useState<TvSeriesSearchResult[]>(
@@ -26,9 +28,13 @@ const TvSeriesForm: React.FC<Props> = ({
   };
 
   const handleSelectResult = (result: TvSeriesSearchResult) => {
+    console.log("Selected result:", result);
     setName(result.name);
     setGenre(result.genre);
     setYear(Number(result.year));
+    setVote_average(
+      result.vote_average !== undefined ? Number(result.vote_average) : null
+    );
     setSearchResults([]); // Clear search results after selection
   };
 
@@ -80,6 +86,20 @@ const TvSeriesForm: React.FC<Props> = ({
         } // Set to null if empty
         required
       />
+      <input
+        type="number"
+        placeholder="Rating"
+        value={
+          vote_average !== null && vote_average !== undefined
+            ? vote_average
+            : ""
+        } // Ensure empty string for null/undefined
+        onChange={(e) =>
+          setVote_average(e.target.value !== "" ? Number(e.target.value) : null)
+        } // Convert to number only if not empty
+        required
+      />
+
       <button type="submit">{editingId ? "Update" : "Add"}</button>
     </form>
   );
