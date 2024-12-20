@@ -27,7 +27,7 @@ const TvSeriesList = ({ tvSeries, handleEdit, handleDelete }: Props) => {
           title={series.name}
           imageUrl={series.imageUrl}
           genre={series.genre}
-          rating={series.rating}
+          vote_average={series.vote_average}
         />
       ))}
     </div>

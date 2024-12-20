@@ -12,6 +12,7 @@ const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 export const fetchTvSeries = async (): Promise<TvSeries[]> => {
   const res = await fetch(API_URL);
   const data = await res.json();
+  //console.log("Raw API Response:", data);
 
   if (!data || !Array.isArray(data.data)) {
     throw new Error("Invalid API response: Expected an array.");
@@ -25,7 +26,7 @@ export const fetchTvSeries = async (): Promise<TvSeries[]> => {
       typeof series.name === "string" &&
       typeof series.genre === "string" &&
       typeof series.year === "number" &&
-      typeof series.rating === "number"
+      typeof series.vote_average === "number"
     );
   });
 
@@ -78,7 +79,7 @@ export const searchTvSeries = async (
           name: result.name,
           genre: genreNames.join(", ") || "Unknown", // Join genre names
           year: result.first_air_date?.split("-")[0] || "Unknown",
-          rating: result.vote_average,
+          vote_average: result.vote_average,
           id: result.id,
         };
       });

@@ -15,13 +15,13 @@ function App() {
   const [name, setName] = useState("");
   const [genre, setGenre] = useState("");
   const [year, setYear] = useState<number | null>(0);
-  const [vote_average, setVote_average] = useState<number | null>(0);
+  const [vote_average, setVote_average] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchTvSeries()
       .then((fetchedSeries) => {
-        //console.log("Fetched TV Series:", fetchedSeries);
+        console.log("Fetched TV Series:", fetchedSeries);
 
         if (Array.isArray(fetchedSeries)) {
           setTvSeries(fetchedSeries.filter((series) => series !== undefined));
@@ -114,7 +114,7 @@ function App() {
         setName={setName}
         setGenre={setGenre}
         setYear={setYear}
-        setRating={setVote_average}
+        setVote_average={setVote_average}
         handleSubmit={handleSubmit}
       />
       <TvSeriesList
