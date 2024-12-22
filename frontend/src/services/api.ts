@@ -33,6 +33,26 @@ export const fetchTvSeries = async (): Promise<TvSeries[]> => {
   return validSeries;
 };
 
+// Fetch image URL from TMDb
+export const getImageUrl = (seriesId: number) => {
+  const baseUrl = "https://image.tmdb.org/t/p/w500"; // Use your preferred size (w500 for moderate resolution)
+
+  return fetch(
+    `https://api.themoviedb.org/3/tv/${seriesId}/images?api_key=${TMDB_API_KEY}`
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      const posterPath = data?.poster_path; // Fetch the first poster image
+      return posterPath
+        ? `${baseUrl}${posterPath}`
+        : "/path/to/default/image.jpg"; // Default image if no poster
+    })
+    .catch((error) => {
+      console.error("Error fetching image:", error);
+      return "/path/to/default/image.jpg"; // Default image on error
+    });
+};
+
 // Fetch genres from TMDb
 const fetchGenres = async (): Promise<Genre[]> => {
   try {

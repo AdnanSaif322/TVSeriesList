@@ -6,6 +6,7 @@ export interface TvSeries {
   genre: string;
   year: number;
   vote_average: number;
+  imageUrl: string;
 }
 
 export interface ApiResponse<T> {
@@ -26,6 +27,7 @@ export interface Props {
   year: number | null;
   vote_average: number | null;
   editingId: number | null;
+  imageUrls: { [key: number]: string };
   setName: (name: string) => void;
   setGenre: (genre: string) => void;
   setYear: (year: number | null) => void;
