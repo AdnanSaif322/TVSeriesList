@@ -1,5 +1,5 @@
 import { TvSeries } from "../types/tvSeries";
-import AnimeCard from "./AnimeCard";
+import { PaginatedAnimeGrid } from "./PaginatedAnimeGrid";
 
 interface Props {
   tvSeries: TvSeries[];
@@ -20,23 +20,7 @@ const TvSeriesList = ({ tvSeries, handleEdit, handleDelete }: Props) => {
   // Logging for debugging
   // console.log("Flattened tvSeries data:", flattenedSeries);
 
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-      {flattenedSeries.map((series, index) => {
-        // const imageUrl = imageUrls[series.id] || "/path/to/default/image.jpg"; // Fallback if image URL is not available yet
-
-        return (
-          <AnimeCard
-            key={index}
-            title={series.name}
-            imageUrl={series.imageUrl}
-            genre={series.genre}
-            vote_average={series.vote_average}
-          />
-        );
-      })}
-    </div>
-  );
+  return <PaginatedAnimeGrid flattenedSeries={flattenedSeries} />;
 };
 
 export default TvSeriesList;

@@ -74,14 +74,14 @@ const TvSeriesForm: React.FC<Props> = ({
         </ul>
       )}
       <input
-        type="text"
+        type="hidden"
         placeholder="Genre"
         value={genre}
         onChange={(e) => setGenre(e.target.value)}
         required
       />
       <input
-        type="number"
+        type="hidden"
         placeholder="Year"
         value={year ?? ""}
         onChange={(e) =>
@@ -90,7 +90,7 @@ const TvSeriesForm: React.FC<Props> = ({
         required
       />
       <input
-        type="number"
+        type="hidden"
         placeholder="Rating"
         value={
           vote_average !== null && vote_average !== undefined
@@ -103,7 +103,7 @@ const TvSeriesForm: React.FC<Props> = ({
         required
       />
       <input
-        type="text"
+        type="hidden"
         placeholder="Image URL"
         value={imageUrl}
         onChange={(e) => setImageUrl(e.target.value)} // Update image URL state
