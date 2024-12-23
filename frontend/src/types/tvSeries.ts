@@ -19,6 +19,7 @@ export interface TvSeriesSearchResult {
   genre: string;
   year: number;
   vote_average: number;
+  imageUrl: string;
 }
 
 export interface Props {
@@ -27,11 +28,12 @@ export interface Props {
   year: number | null;
   vote_average: number | null;
   editingId: number | null;
-  imageUrls: { [key: number]: string };
+  imageUrl: { [key: number]: string };
   setName: (name: string) => void;
   setGenre: (genre: string) => void;
   setYear: (year: number | null) => void;
   setVote_average: (vote_average: number | null) => void;
+  setImageUrl: (imgaeUrl: string) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
 }
 
@@ -41,6 +43,7 @@ export interface TvSeriesApiResult {
   genre_ids: number[];
   first_air_date: string;
   vote_average: number;
+  imageUrl: string;
 }
 
 export interface Genre {

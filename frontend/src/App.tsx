@@ -5,7 +5,6 @@ import {
   addTvSeries,
   updateTvSeries,
   deleteTvSeries,
-  getImageUrl,
 } from "./services/api";
 import { TvSeries } from "./types/tvSeries";
 import TvSeriesForm from "./components/TvSeriesForm";
@@ -17,7 +16,7 @@ function App() {
   const [genre, setGenre] = useState("");
   const [year, setYear] = useState<number | null>(0);
   const [vote_average, setVote_average] = useState<number | null>(null);
-  const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({}); // To store image URLs
+  const [imageUrl, setImageUrl] = useState<string>(""); // To store image URLs
   const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -26,17 +25,10 @@ function App() {
         console.log("Fetched TV Series:", fetchedSeries);
 
         if (Array.isArray(fetchedSeries)) {
-          setTvSeries(fetchedSeries.filter((series) => series !== undefined));
-
-          // Fetch image URLs for each series
-          fetchedSeries.forEach((series: { id: number }) => {
-            getImageUrl(series.id).then((imageUrl) => {
-              setImageUrls((prevState) => ({
-                ...prevState,
-                [series.id]: imageUrl, // Store image URL for the series
-              }));
-            });
-          });
+          const filteredSeries = fetchedSeries.filter(
+            (series) => series !== undefined
+          );
+          setTvSeries(filteredSeries);
         } else {
           console.error("Invalid fetched series:", fetchedSeries);
           setTvSeries([]);
@@ -56,9 +48,11 @@ function App() {
     }
 
     // Extract the specific image URL for the current series
-    const imageUrl =
-      imageUrls[editingId ?? Date.now()] || "/path/to/default/image.jpg"; // Fallback to a default image
+    //const imageUrl =
+    // imageUrls[editingId ?? Date.now()] || "/path/to/default/image.jpg"; // Fallback to a default image
 
+    //const imageUrl = await getImageUrl(response.results[0].id);
+    console.log("Image URL:", imageUrl);
     const payload = { name, genre, year, vote_average, imageUrl };
 
     if (editingId !== null) {
@@ -116,6 +110,7 @@ function App() {
     setYear(0);
     setVote_average(0);
     setEditingId(null);
+    setImageUrl("");
   };
 
   return (
@@ -129,7 +124,8 @@ function App() {
         editingId={editingId}
         setName={setName}
         setGenre={setGenre}
-        imageUrls={imageUrls}
+        imageUrl={imageUrl}
+        setImageUrl={setImageUrl}
         setYear={setYear}
         setVote_average={setVote_average}
         handleSubmit={handleSubmit}

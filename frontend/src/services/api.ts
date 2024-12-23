@@ -3,8 +3,8 @@ import {
   Genre,
   TvSeries,
   TvSeriesApiResult,
+  TvSeriesSearchResult,
 } from "../types/tvSeries";
-import { TvSeriesSearchResult } from "../types/tvSeries";
 
 const API_URL = "http://localhost:3000/series";
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -26,8 +26,10 @@ export const fetchTvSeries = async (): Promise<TvSeries[]> => {
       typeof series.name === "string" &&
       typeof series.genre === "string" &&
       typeof series.year === "number" &&
-      typeof series.vote_average === "number"
+      typeof series.vote_average === "number" &&
+      typeof series.imageUrl === "string"
     );
+    console.log(series.imageUrl);
   });
 
   return validSeries;
@@ -35,17 +37,22 @@ export const fetchTvSeries = async (): Promise<TvSeries[]> => {
 
 // Fetch image URL from TMDb
 export const getImageUrl = (seriesId: number) => {
-  const baseUrl = "https://image.tmdb.org/t/p/w500"; // Use your preferred size (w500 for moderate resolution)
+  const baseUrl = "https://image.tmdb.org/t/p/w500"; // Base URL for image resources
 
   return fetch(
-    `https://api.themoviedb.org/3/tv/${seriesId}/images?api_key=${TMDB_API_KEY}`
+    `https://api.themoviedb.org/3/tv/${seriesId}?api_key=${TMDB_API_KEY}`
   )
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch TV series data.");
+      }
+      return response.json();
+    })
     .then((data) => {
-      const posterPath = data?.poster_path; // Fetch the first poster image
+      const posterPath = data?.poster_path; // Use the correct key for the poster image
       return posterPath
-        ? `${baseUrl}${posterPath}`
-        : "/path/to/default/image.jpg"; // Default image if no poster
+        ? `${baseUrl}${posterPath}` // Construct the full image URL
+        : "/path/to/default/image.jpg"; // Fallback to default image if no poster_path
     })
     .catch((error) => {
       console.error("Error fetching image:", error);
@@ -87,6 +94,7 @@ export const searchTvSeries = async (
 
     //Fetch the genre list
     const genres = await fetchGenres();
+    const imageUrl = await getImageUrl(response.results[0].id);
 
     if (response && response.results) {
       return response.results.map((result: TvSeriesApiResult) => {
@@ -101,6 +109,7 @@ export const searchTvSeries = async (
           year: result.first_air_date?.split("-")[0] || "Unknown",
           vote_average: result.vote_average,
           id: result.id,
+          imageUrl: imageUrl,
         };
       });
     }

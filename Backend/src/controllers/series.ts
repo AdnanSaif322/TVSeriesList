@@ -13,7 +13,9 @@ app.get("/", async (c) => {
 // Create a new tv series
 app.post("/", async (c) => {
   const db = new SupabaseService(c);
-  const { name, genre, year, vote_average } = await c.req.json();
+  const { name, genre, year, vote_average, imageUrl } = await c.req.json();
+
+  console.log(imageUrl);
 
   if (!name || !genre || !year || !vote_average) {
     return c.json(
@@ -27,6 +29,7 @@ app.post("/", async (c) => {
     genre,
     year,
     vote_average,
+    imageUrl,
   });
 
   return c.json({ message: "TV series successfully inserted", data }, 201);

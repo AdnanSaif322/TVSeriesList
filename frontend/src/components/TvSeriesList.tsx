@@ -7,6 +7,7 @@ interface Props {
   handleDelete: (id: number) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TvSeriesList = ({ tvSeries, handleEdit, handleDelete }: Props) => {
   // Flatten the array to ensure no nested arrays are included
   const flattenedSeries = tvSeries.flat();

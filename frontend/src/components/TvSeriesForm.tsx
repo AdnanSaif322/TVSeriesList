@@ -11,6 +11,8 @@ const TvSeriesForm: React.FC<Props> = ({
   setName,
   setGenre,
   setYear,
+  imageUrl,
+  setImageUrl,
   setVote_average,
   handleSubmit,
 }) => {
@@ -35,6 +37,7 @@ const TvSeriesForm: React.FC<Props> = ({
     setVote_average(
       result.vote_average !== undefined ? Number(result.vote_average) : null
     );
+    setImageUrl(result.imageUrl);
     setSearchResults([]); // Clear search results after selection
   };
 
@@ -97,6 +100,13 @@ const TvSeriesForm: React.FC<Props> = ({
         onChange={(e) =>
           setVote_average(e.target.value !== "" ? Number(e.target.value) : null)
         } // Convert to number only if not empty
+        required
+      />
+      <input
+        type="text"
+        placeholder="Image URL"
+        value={imageUrl}
+        onChange={(e) => setImageUrl(e.target.value)} // Update image URL state
         required
       />
 
