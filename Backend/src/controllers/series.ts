@@ -15,7 +15,7 @@ app.post("/", async (c) => {
   const db = new SupabaseService(c);
   const { name, genre, year, vote_average, imageUrl } = await c.req.json();
 
-  console.log(imageUrl);
+  // console.log(imageUrl);
 
   if (!name || !genre || !year || !vote_average) {
     return c.json(

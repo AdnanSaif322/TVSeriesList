@@ -75,4 +75,5 @@ export interface AnimeDetails {
   year: number;
   description: string;
   cast: CastMember[];
+  backgroundImageUrl: string;
 }

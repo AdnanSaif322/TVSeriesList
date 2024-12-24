@@ -251,5 +251,6 @@ export const fetchAnimeDetailsByName = async (
     year: new Date(detailsData.first_air_date).getFullYear(),
     description: detailsData.overview,
     cast, // You can extend this to include cast data if needed
+    backgroundImageUrl: `https://image.tmdb.org/t/p/w500${detailsData.backdrop_path}`,
   };
 };

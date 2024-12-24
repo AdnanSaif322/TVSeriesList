@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { fetchAnimeDetailsByName } from "../services/api"; // API call
-import { AnimeDetails } from "../types/tvSeries"; // Types
+import { AnimeDetails, CastMember } from "../types/tvSeries"; // Types
 
 // export default function SeriesDetails() {
 //   const params = useParams();
@@ -36,24 +36,69 @@ const SeriesDetails: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 text-white">
+    <div className="text-white">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row">
-        <div className="md:w-1/3">
-          <img
-            className="rounded-lg shadow-lg"
-            src={anime.imageUrl}
-            alt={anime.title}
-          />
+      <div
+        className="relative w-full h-auto bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${anime.backgroundImageUrl})`,
+          backgroundSize: "cover", // Ensures background image covers the area
+          backgroundPosition: "center", // Keeps the image centere
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black bg-opacity-75"></div>
+
+        <div className="relative z-10 w-full px-4 py-12 flex flex-col md:flex-row items-center">
+          {/* Anime Poster */}
+          <div className="w-full md:w-1/3 flex justify-center md:justify-start">
+            <img
+              className="rounded-lg shadow-lg max-w-full h-auto"
+              src={anime.imageUrl}
+              alt={anime.title}
+            />
+          </div>
+          {/* Anime Info */}
+          <div className="w-full md:w-2/3 md:ml-8 text-center md:text-left mt-4 md:mt-0">
+            <h1 className="text-2xl md:text-4xl font-bold">{anime.title}</h1>
+            <p className="text-sm text-gray-400 mt-1">{anime.year}</p>
+            <p className="mt-2 text-lg text-yellow-400">
+              {anime.vote_average}% User Score
+            </p>
+            <p className="text-sm text-gray-300 mt-1">{anime.genre}</p>
+            <p className="mt-4 text-gray-200">{anime.description}</p>
+            <p className="mt-4 text-gray-200">{anime.plot} Episodes</p>
+          </div>
         </div>
-        <div className="md:w-2/3 md:ml-8">
-          <h1 className="text-4xl font-bold">{anime.title}</h1>
-          <p className="text-sm text-gray-400">{anime.year}</p>
-          <p className="mt-2 text-lg text-yellow-400">
-            {anime.vote_average}% User Score
-          </p>
-          <p className="text-sm text-gray-300">{anime.genre}</p>
-          <p className="mt-4 text-gray-200">{anime.description}</p>
+      </div>
+
+      {/* Cast Section */}
+      <div className="w-full px-4 py-8">
+        <h2 className="text-xl md:text-2xl font-semibold text-center md:text-left">
+          Series Cast
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-4">
+          {anime.cast.map((actor: CastMember) => (
+            <div
+              key={actor.id}
+              className="bg-gray-700 rounded-lg shadow-lg overflow-hidden max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg"
+            >
+              <img
+                src={actor.imageUrl}
+                alt={actor.name}
+                className="h-48 sm:h-64 md:h-60 lg:h-72 xl:h-80 max-h-96 w-full object-cover "
+              />
+              <div className="p-4">
+                <h3 className="text-md font-semibold">{actor.name}</h3>
+                <p className="text-sm text-gray-400">
+                  {actor.character} (voice)
+                </p>
+                <p className="text-xs text-gray-500">
+                  {actor.episodes} Episodes
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
