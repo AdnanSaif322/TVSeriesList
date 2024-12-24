@@ -9,6 +9,7 @@ import {
 import { TvSeries } from "./types/tvSeries";
 import TvSeriesForm from "./components/TvSeriesForm";
 import TvSeriesList from "./components/TvSeriesList";
+import Swal from "sweetalert2";
 
 function App() {
   const [tvSeries, setTvSeries] = useState<TvSeries[]>([]);
@@ -22,7 +23,7 @@ function App() {
   useEffect(() => {
     fetchTvSeries()
       .then((fetchedSeries) => {
-        console.log("Fetched TV Series:", fetchedSeries);
+        // console.log("Fetched TV Series:", fetchedSeries);
 
         if (Array.isArray(fetchedSeries)) {
           const filteredSeries = fetchedSeries.filter(
@@ -47,12 +48,7 @@ function App() {
       return;
     }
 
-    // Extract the specific image URL for the current series
-    //const imageUrl =
-    // imageUrls[editingId ?? Date.now()] || "/path/to/default/image.jpg"; // Fallback to a default image
-
-    //const imageUrl = await getImageUrl(response.results[0].id);
-    console.log("Image URL:", imageUrl);
+    // console.log("Image URL:", imageUrl);
     const payload = { name, genre, year, vote_average, imageUrl };
 
     if (editingId !== null) {
@@ -74,11 +70,26 @@ function App() {
       addTvSeries(payload)
         .then((newSeries) => {
           setTvSeries((prev) => [...prev, newSeries]);
+          Swal.fire({
+            title: "Success!",
+            text: "TV series added successfully!",
+            icon: "success",
+            confirmButtonText: "OK",
+            timer: 3000,
+            timerProgressBar: true,
+          });
           resetForm();
         })
         .catch((error) => {
           console.error("Error adding series:", error);
-          alert("Failed to add the series. Please try again.");
+          Swal.fire({
+            title: "Error!",
+            text: "Failed to add the series. Please try again.",
+            icon: "error",
+            confirmButtonText: "OK",
+            timer: 5000,
+            timerProgressBar: true,
+          });
         });
     }
   };
@@ -95,13 +106,36 @@ function App() {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm("Are you sure you want to delete this TV series?")) {
-      deleteTvSeries(id)
-        .then(() =>
-          setTvSeries((prev) => prev.filter((series) => series.id !== id))
-        )
-        .catch(console.error);
-    }
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this action!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteTvSeries(id)
+          .then(() => {
+            setTvSeries((prev) => prev.filter((series) => series.id !== id));
+            Swal.fire(
+              "Deleted!",
+              "The TV series has been deleted successfully.",
+              "success"
+            );
+          })
+          .catch((error) => {
+            console.error(error);
+            Swal.fire(
+              "Error!",
+              "Failed to delete the TV series. Please try again.",
+              "error"
+            );
+          });
+      }
+    });
   };
 
   const resetForm = () => {

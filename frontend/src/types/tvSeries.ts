@@ -57,3 +57,22 @@ export interface AnimeCardProps {
   genre: string;
   vote_average: number;
 }
+
+export interface CastMember {
+  id: number;
+  name: string;
+  character: string;
+  episodes: number;
+  imageUrl: string;
+}
+
+export interface AnimeDetails {
+  //id: number;
+  title: string;
+  imageUrl: string;
+  genre: string;
+  vote_average: number;
+  year: number;
+  description: string;
+  cast: CastMember[];
+}

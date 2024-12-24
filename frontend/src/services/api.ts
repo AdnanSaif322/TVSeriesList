@@ -1,4 +1,5 @@
 import {
+  AnimeDetails,
   ApiResponse,
   Genre,
   TvSeries,
@@ -189,4 +190,66 @@ export const deleteTvSeries = async (id: number): Promise<void> => {
     console.error("Error in deleteTvSeries:", error);
     throw error;
   }
+};
+
+export const fetchAnimeDetailsByName = async (
+  name: string
+): Promise<AnimeDetails> => {
+  const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+
+  // Step 1: Search TMDb by name
+  const searchResponse = await fetch(
+    `${TMDB_BASE_URL}/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(
+      name
+    )}`
+  );
+  if (!searchResponse.ok) {
+    throw new Error("Failed to search for anime by name");
+  }
+  const searchData = await searchResponse.json();
+
+  // Check if any results were found
+  if (!searchData.results || searchData.results.length === 0) {
+    throw new Error("No results found for the provided name");
+  }
+
+  // Step 2: Get the first result's ID
+  const seriesId = searchData.results[0].id;
+
+  // Step 3: Fetch series details by ID
+  const detailsResponse = await fetch(
+    `${TMDB_BASE_URL}/tv/${seriesId}?api_key=${TMDB_API_KEY}&language=en-US`
+  );
+  if (!detailsResponse.ok) {
+    throw new Error("Failed to fetch anime details");
+  }
+  const detailsData = await detailsResponse.json();
+
+  // Step 3: Fetch cast details
+  const creditsResponse = await fetch(
+    `${TMDB_BASE_URL}/tv/${seriesId}/credits?api_key=${TMDB_API_KEY}`
+  );
+  const creditsData = await creditsResponse.json();
+
+  // Map cast details
+  const cast = creditsData.cast.slice(0, 12).map((member: any) => ({
+    id: member.id,
+    name: member.name,
+    character: member.character,
+    imageUrl: member.profile_path
+      ? `https://image.tmdb.org/t/p/w500${member.profile_path}`
+      : "https://via.placeholder.com/500x750?text=No+Image",
+    episodes: member.total_episode_count || 0,
+  }));
+
+  // Return the combined details
+  return {
+    title: detailsData.name,
+    imageUrl: `https://image.tmdb.org/t/p/w500${detailsData.poster_path}`,
+    genre: detailsData.genres.map((g: any) => g.name).join(", "),
+    vote_average: detailsData.vote_average,
+    year: new Date(detailsData.first_air_date).getFullYear(),
+    description: detailsData.overview,
+    cast, // You can extend this to include cast data if needed
+  };
 };
