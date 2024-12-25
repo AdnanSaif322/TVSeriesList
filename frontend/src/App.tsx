@@ -152,27 +152,33 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>Series List</h1>
-      <TvSeriesForm
-        name={name}
-        genre={genre}
-        year={year}
-        voteAverage={voteAverage}
-        editingId={editingId}
-        setName={setName}
-        setGenre={setGenre}
-        imageUrl={imageUrl}
-        setImageUrl={setImageUrl}
-        setYear={setYear}
-        setVoteAverage={setVoteAverage}
-        handleSubmit={handleSubmit}
-      />
-      <TvSeriesList
-        tvSeries={tvSeries}
-        // handleEdit={handleEdit}
-        handleDelete={handleDelete}
-      />
+    <div className="flex flex-wrap justify-center">
+      <div className="w-full text-center mb-4">
+        <h1>Series List</h1>
+      </div>
+      <div className="w-full flex justify-center mb-4">
+        <TvSeriesForm
+          name={name}
+          genre={genre}
+          year={year}
+          voteAverage={voteAverage}
+          editingId={editingId}
+          setName={setName}
+          setGenre={setGenre}
+          imageUrl={imageUrl}
+          setImageUrl={setImageUrl}
+          setYear={setYear}
+          setVoteAverage={setVoteAverage}
+          handleSubmit={handleSubmit}
+        />
+      </div>
+      <div className="w-full flex justify-center">
+        <TvSeriesList
+          tvSeries={tvSeries}
+          // handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      </div>
     </div>
   );
 }
