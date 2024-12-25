@@ -39,7 +39,7 @@ const SeriesDetails: React.FC = () => {
     <div className="text-white">
       {/* Header Section */}
       <div
-        className="relative w-full h-auto bg-cover bg-center"
+        className="relative w-full h-auto bg-auto bg-center"
         style={{
           backgroundImage: `url(${anime.backgroundImageUrl})`,
           backgroundSize: "cover", // Ensures background image covers the area
@@ -47,7 +47,7 @@ const SeriesDetails: React.FC = () => {
         }}
       >
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-75"></div>
+        <div className="absolute inset-0 anime-background-overlay"></div>
 
         <div className="relative z-10 w-full px-4 py-12 flex flex-col md:flex-row items-center">
           {/* Anime Poster */}
@@ -63,11 +63,37 @@ const SeriesDetails: React.FC = () => {
             <h1 className="text-2xl md:text-4xl font-bold">{anime.title}</h1>
             <p className="text-sm text-gray-400 mt-1">{anime.year}</p>
             <p className="mt-2 text-lg text-yellow-400">
-              {anime.vote_average}% User Score
+              {anime.voteAverage}% User Score
             </p>
             <p className="text-sm text-gray-300 mt-1">{anime.genre}</p>
             <p className="mt-4 text-gray-200">{anime.description}</p>
-            <p className="mt-4 text-gray-200">{anime.plot} Episodes</p>
+            <p className="mt-4 text-gray-200">{anime.episodeCount} Episodes!</p>
+            <p className="mt-4 text-gray-200">Find More on</p>
+            <div className="flex flex-wrap gap-4 mt-4">
+              {/* Fandom Wiki Button */}
+              <a
+                href={`https://www.community.fandom.com/wiki/${encodeURIComponent(
+                  anime.title
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="custom-button px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-green-600"
+              >
+                Fandom Wiki
+              </a>
+
+              {/* MyAnimeList Button */}
+              <a
+                href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
+                  anime.title
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="custom-button px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              >
+                My AnimeList
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -77,7 +103,7 @@ const SeriesDetails: React.FC = () => {
         <h2 className="text-xl md:text-2xl font-semibold text-center md:text-left">
           Series Cast
         </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-4">
+        <div className="flex flex-wrap justify-center md:justify-start gap-6 mt-4">
           {anime.cast.map((actor: CastMember) => (
             <div
               key={actor.id}
@@ -90,12 +116,7 @@ const SeriesDetails: React.FC = () => {
               />
               <div className="p-4">
                 <h3 className="text-md font-semibold">{actor.name}</h3>
-                <p className="text-sm text-gray-400">
-                  {actor.character} (voice)
-                </p>
-                <p className="text-xs text-gray-500">
-                  {actor.episodes} Episodes
-                </p>
+                <p className="text-sm text-gray-400">{actor.character}</p>
               </div>
             </div>
           ))}

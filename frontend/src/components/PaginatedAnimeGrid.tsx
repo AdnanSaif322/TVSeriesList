@@ -1,20 +1,26 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { TvSeries } from "../types/tvSeries";
 import AnimeCard from "./AnimeCard";
 
 const ITEMS_PER_PAGE = 20;
 interface AnimeCardProps {
   flattenedSeries: TvSeries[];
+  itemsPerPage?: number;
 }
 
-export const PaginatedAnimeGrid = ({ flattenedSeries }: AnimeCardProps) => {
+export const PaginatedAnimeGrid = ({
+  flattenedSeries,
+  itemsPerPage = ITEMS_PER_PAGE,
+}: AnimeCardProps) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(flattenedSeries.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const totalPages = Math.ceil(flattenedSeries.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
 
-  const currentItems = flattenedSeries.slice(startIndex, endIndex);
+  const currentItems = useMemo(() => {
+    return flattenedSeries.slice(startIndex, endIndex);
+  }, [startIndex, endIndex, flattenedSeries]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -30,14 +36,14 @@ export const PaginatedAnimeGrid = ({ flattenedSeries }: AnimeCardProps) => {
 
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-        {currentItems.map((series, index) => (
+      <div className="flex flex-wrap justify-center gap-6 p-4">
+        {currentItems.map((series) => (
           <AnimeCard
-            key={index}
+            key={series.id}
             title={series.name}
             imageUrl={series.imageUrl}
             genre={series.genre}
-            vote_average={series.vote_average}
+            voteAverage={series.voteAverage}
           />
         ))}
       </div>
@@ -46,7 +52,11 @@ export const PaginatedAnimeGrid = ({ flattenedSeries }: AnimeCardProps) => {
         <button
           onClick={handlePreviousPage}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-500 text-white rounded"
+          className={`px-4 py-2 rounded ${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+              : "bg-gray-500 text-white"
+          }`}
         >
           Previous
         </button>
@@ -56,7 +66,11 @@ export const PaginatedAnimeGrid = ({ flattenedSeries }: AnimeCardProps) => {
         <button
           onClick={handleNextPage}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-gray-500 text-white rounded"
+          className={`px-4 py-2 rounded ${
+            currentPage === totalPages
+              ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+              : "bg-gray-500 text-white"
+          }`}
         >
           Next
         </button>

@@ -5,7 +5,7 @@ export interface TvSeries {
   name: string;
   genre: string;
   year: number;
-  vote_average: number;
+  voteAverage: number;
   imageUrl: string;
 }
 
@@ -18,7 +18,7 @@ export interface TvSeriesSearchResult {
   name: string;
   genre: string;
   year: number;
-  vote_average: number;
+  voteAverage: number;
   imageUrl: string;
 }
 
@@ -26,13 +26,13 @@ export interface Props {
   name: string;
   genre: string;
   year: number | null;
-  vote_average: number | null;
+  voteAverage: number | null;
   editingId: number | null;
   imageUrl: { [key: number]: string };
   setName: (name: string) => void;
   setGenre: (genre: string) => void;
   setYear: (year: number | null) => void;
-  setVote_average: (vote_average: number | null) => void;
+  setVoteAverage: (voteAverage: number | null) => void;
   setImageUrl: (imgaeUrl: string) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
 }
@@ -42,8 +42,9 @@ export interface TvSeriesApiResult {
   name: string;
   genre_ids: number[];
   first_air_date: string;
-  vote_average: number;
+  voteAverage: number;
   imageUrl: string;
+  poster_path: string;
 }
 
 export interface Genre {
@@ -55,14 +56,13 @@ export interface AnimeCardProps {
   title: string;
   imageUrl: string;
   genre: string;
-  vote_average: number;
+  voteAverage: number;
 }
 
 export interface CastMember {
   id: number;
   name: string;
   character: string;
-  episodes: number;
   imageUrl: string;
 }
 
@@ -71,9 +71,10 @@ export interface AnimeDetails {
   title: string;
   imageUrl: string;
   genre: string;
-  vote_average: number;
+  voteAverage: number;
   year: number;
   description: string;
   cast: CastMember[];
   backgroundImageUrl: string;
+  episodeCount: number;
 }

@@ -9,11 +9,12 @@ import {
 
 const API_URL = "http://localhost:3000/series";
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const DEFAULT_IMAGE = "/path/to/default/image.jpg";
 
 export const fetchTvSeries = async (): Promise<TvSeries[]> => {
   const res = await fetch(API_URL);
   const data = await res.json();
-  //console.log("Raw API Response:", data);
+  console.log("Raw API Response:", data);
 
   if (!data || !Array.isArray(data.data)) {
     throw new Error("Invalid API response: Expected an array.");
@@ -21,18 +22,20 @@ export const fetchTvSeries = async (): Promise<TvSeries[]> => {
 
   // Validate each series object
   const validSeries = data.data.filter((series: TvSeries) => {
-    return (
+    const isValid =
       series &&
       typeof series.id === "number" &&
       typeof series.name === "string" &&
       typeof series.genre === "string" &&
       typeof series.year === "number" &&
-      typeof series.vote_average === "number" &&
-      typeof series.imageUrl === "string"
-    );
-    console.log(series.imageUrl);
+      typeof series.voteAverage === "number" &&
+      typeof series.imageUrl === "string";
+    if (!isValid) {
+      console.log("Invalid Series:", JSON.stringify(series, null, 2));
+    }
+    return isValid;
   });
-
+  console.log("Valid Series:", validSeries);
   return validSeries;
 };
 
@@ -53,22 +56,24 @@ export const getImageUrl = (seriesId: number) => {
       const posterPath = data?.poster_path; // Use the correct key for the poster image
       return posterPath
         ? `${baseUrl}${posterPath}` // Construct the full image URL
-        : "/path/to/default/image.jpg"; // Fallback to default image if no poster_path
+        : DEFAULT_IMAGE; // Fallback to default image if no poster_path
     })
     .catch((error) => {
       console.error("Error fetching image:", error);
-      return "/path/to/default/image.jpg"; // Default image on error
+      return DEFAULT_IMAGE; // Default image on error
     });
 };
 
 // Fetch genres from TMDb
+let cachedGenres: Genre[] | null = null;
 const fetchGenres = async (): Promise<Genre[]> => {
+  if (cachedGenres) return cachedGenres;
   try {
-    const API_KEY = TMDB_API_KEY; // Use your API key here
     const response = await fetch(
-      `https://api.themoviedb.org/3/genre/tv/list?api_key=${API_KEY}&language=en-US`
+      `https://api.themoviedb.org/3/genre/tv/list?api_key=${TMDB_API_KEY}&language=en-US`
     );
     const data = await response.json();
+    cachedGenres = data.genres;
     return data.genres;
   } catch (error) {
     console.error("Error fetching genres:", error);
@@ -95,22 +100,23 @@ export const searchTvSeries = async (
 
     //Fetch the genre list
     const genres = await fetchGenres();
-    const imageUrl = await getImageUrl(response.results[0].id);
+    //const imageUrl = await getImageUrl(response.results[0].id);
 
     if (response && response.results) {
       return response.results.map((result: TvSeriesApiResult) => {
-        // Map genre IDs to names
         const genreNames = result.genre_ids
           .map((id) => genres.find((genre) => genre.id === id)?.name)
-          .filter((name) => name); // Filter out undefined values
+          .filter((name) => name);
 
         return {
           name: result.name,
-          genre: genreNames.join(", ") || "Unknown", // Join genre names
+          genre: genreNames.join(", ") || "Unknown",
           year: result.first_air_date?.split("-")[0] || "Unknown",
-          vote_average: result.vote_average,
+          voteAverage: result.voteAverage,
           id: result.id,
-          imageUrl: imageUrl,
+          imageUrl: result.poster_path
+            ? `https://image.tmdb.org/t/p/w500${result.poster_path}`
+            : DEFAULT_IMAGE,
         };
       });
     }
@@ -230,27 +236,30 @@ export const fetchAnimeDetailsByName = async (
     `${TMDB_BASE_URL}/tv/${seriesId}/credits?api_key=${TMDB_API_KEY}`
   );
   const creditsData = await creditsResponse.json();
+  console.log(creditsData.cast);
 
   // Map cast details
-  const cast = creditsData.cast.slice(0, 12).map((member: any) => ({
+  const cast = creditsData.cast.slice(0, 18).map((member: any) => ({
     id: member.id,
     name: member.name,
     character: member.character,
     imageUrl: member.profile_path
       ? `https://image.tmdb.org/t/p/w500${member.profile_path}`
       : "https://via.placeholder.com/500x750?text=No+Image",
-    episodes: member.total_episode_count || 0,
   }));
 
   // Return the combined details
   return {
     title: detailsData.name,
-    imageUrl: `https://image.tmdb.org/t/p/w500${detailsData.poster_path}`,
+    imageUrl: detailsData.poster_path
+      ? `https://image.tmdb.org/t/p/w500${detailsData.poster_path}`
+      : "https://via.placeholder.com/500x750?text=No+Image",
     genre: detailsData.genres.map((g: any) => g.name).join(", "),
-    vote_average: detailsData.vote_average,
+    voteAverage: detailsData.voteAverage,
     year: new Date(detailsData.first_air_date).getFullYear(),
     description: detailsData.overview,
     cast, // You can extend this to include cast data if needed
     backgroundImageUrl: `https://image.tmdb.org/t/p/w500${detailsData.backdrop_path}`,
+    episodeCount: detailsData.number_of_episodes,
   };
 };

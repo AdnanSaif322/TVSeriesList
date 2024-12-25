@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
+//import "./index.css";
 import {
   fetchTvSeries,
   addTvSeries,
@@ -16,7 +16,7 @@ function App() {
   const [name, setName] = useState("");
   const [genre, setGenre] = useState("");
   const [year, setYear] = useState<number | null>(0);
-  const [vote_average, setVote_average] = useState<number | null>(null);
+  const [voteAverage, setVoteAverage] = useState<number | null>(null);
   const [imageUrl, setImageUrl] = useState<string>(""); // To store image URLs
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -40,16 +40,20 @@ function App() {
         setTvSeries([]);
       });
   }, []);
+  console.log(tvSeries);
+  if (tvSeries.length == 0) {
+    return <div className="text-white text-center mt-10">Loading...</div>;
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!name || !genre || !year || !vote_average) {
+    if (!name || !genre || !year || !voteAverage) {
       alert("Please fill in all fields.");
       return;
     }
 
     // console.log("Image URL:", imageUrl);
-    const payload = { name, genre, year, vote_average, imageUrl };
+    const payload = { name, genre, year, voteAverage, imageUrl };
 
     if (editingId !== null) {
       updateTvSeries(editingId, payload) // Convert editingId to number
@@ -94,16 +98,16 @@ function App() {
     }
   };
 
-  const handleEdit = (series: TvSeries) => {
-    setEditingId(
-      typeof series.id === "string" ? parseInt(series.id, 10) : series.id
-    );
-    setName(series.name);
-    setGenre(series.genre);
-    setYear(
-      typeof series.year === "string" ? parseInt(series.year, 10) : series.year
-    );
-  };
+  // const handleEdit = (series: TvSeries) => {
+  //   setEditingId(
+  //     typeof series.id === "string" ? parseInt(series.id, 10) : series.id
+  //   );
+  //   setName(series.name);
+  //   setGenre(series.genre);
+  //   setYear(
+  //     typeof series.year === "string" ? parseInt(series.year, 10) : series.year
+  //   );
+  // };
 
   const handleDelete = (id: number) => {
     Swal.fire({
@@ -142,7 +146,7 @@ function App() {
     setName("");
     setGenre("");
     setYear(0);
-    setVote_average(0);
+    setVoteAverage(0);
     setEditingId(null);
     setImageUrl("");
   };
@@ -154,19 +158,19 @@ function App() {
         name={name}
         genre={genre}
         year={year}
-        vote_average={vote_average}
+        voteAverage={voteAverage}
         editingId={editingId}
         setName={setName}
         setGenre={setGenre}
         imageUrl={imageUrl}
         setImageUrl={setImageUrl}
         setYear={setYear}
-        setVote_average={setVote_average}
+        setVoteAverage={setVoteAverage}
         handleSubmit={handleSubmit}
       />
       <TvSeriesList
         tvSeries={tvSeries}
-        handleEdit={handleEdit}
+        // handleEdit={handleEdit}
         handleDelete={handleDelete}
       />
     </div>

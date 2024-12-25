@@ -4,16 +4,12 @@ import { Props, TvSeriesSearchResult } from "../types/tvSeries";
 
 const TvSeriesForm: React.FC<Props> = ({
   name,
-  genre,
-  year,
-  vote_average,
   editingId,
   setName,
   setGenre,
   setYear,
-  imageUrl,
   setImageUrl,
-  setVote_average,
+  setVoteAverage,
   handleSubmit,
 }) => {
   const [searchResults, setSearchResults] = useState<TvSeriesSearchResult[]>(
@@ -22,23 +18,26 @@ const TvSeriesForm: React.FC<Props> = ({
 
   const handleSearch = async (query: string) => {
     if (query.length > 2) {
-      const results = await searchTvSeries(query); // Fetch results from the API
-      setSearchResults(results);
+      try {
+        const results = await searchTvSeries(query);
+        setSearchResults(results);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+      }
     } else {
       setSearchResults([]);
     }
   };
 
   const handleSelectResult = (result: TvSeriesSearchResult) => {
-    console.log("Selected result:", result);
     setName(result.name);
     setGenre(result.genre);
     setYear(Number(result.year));
-    setVote_average(
-      result.vote_average !== undefined ? Number(result.vote_average) : null
+    setVoteAverage(
+      result.voteAverage ? Number(result.voteAverage) : (null as number | null)
     );
     setImageUrl(result.imageUrl);
-    setSearchResults([]); // Clear search results after selection
+    setSearchResults([]);
   };
 
   return (
@@ -55,6 +54,7 @@ const TvSeriesForm: React.FC<Props> = ({
       />
       {searchResults.length > 0 && (
         <ul
+          role="listbox"
           style={{
             border: "1px solid #ccc",
             maxHeight: "150px",
@@ -64,7 +64,8 @@ const TvSeriesForm: React.FC<Props> = ({
         >
           {searchResults.map((result, index) => (
             <li
-              key={index}
+              key={result.id || index} // Prefer `id` if available
+              role="option"
               onClick={() => handleSelectResult(result)}
               style={{ cursor: "pointer", padding: "5px", listStyle: "none" }}
             >
@@ -73,42 +74,6 @@ const TvSeriesForm: React.FC<Props> = ({
           ))}
         </ul>
       )}
-      <input
-        type="hidden"
-        placeholder="Genre"
-        value={genre}
-        onChange={(e) => setGenre(e.target.value)}
-        required
-      />
-      <input
-        type="hidden"
-        placeholder="Year"
-        value={year ?? ""}
-        onChange={(e) =>
-          setYear(e.target.value ? Number(e.target.value) : null)
-        } // Set to null if empty
-        required
-      />
-      <input
-        type="hidden"
-        placeholder="Rating"
-        value={
-          vote_average !== null && vote_average !== undefined
-            ? vote_average
-            : ""
-        } // Ensure empty string for null/undefined
-        onChange={(e) =>
-          setVote_average(e.target.value !== "" ? Number(e.target.value) : null)
-        } // Convert to number only if not empty
-        required
-      />
-      <input
-        type="hidden"
-        placeholder="Image URL"
-        value={imageUrl}
-        onChange={(e) => setImageUrl(e.target.value)} // Update image URL state
-        required
-      />
 
       <button type="submit">{editingId ? "Update" : "Add"}</button>
     </form>

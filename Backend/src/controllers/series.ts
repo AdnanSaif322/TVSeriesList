@@ -13,11 +13,11 @@ app.get("/", async (c) => {
 // Create a new tv series
 app.post("/", async (c) => {
   const db = new SupabaseService(c);
-  const { name, genre, year, vote_average, imageUrl } = await c.req.json();
+  const { name, genre, year, voteAverage, imageUrl } = await c.req.json();
 
   // console.log(imageUrl);
 
-  if (!name || !genre || !year || !vote_average) {
+  if (!name || !genre || !year || !voteAverage) {
     return c.json(
       { message: "All fields (name, genre, year, and rating) are required." },
       400
@@ -28,7 +28,7 @@ app.post("/", async (c) => {
     name,
     genre,
     year,
-    vote_average,
+    voteAverage,
     imageUrl,
   });
 
@@ -39,13 +39,13 @@ app.post("/", async (c) => {
 app.put("/:id", async (c) => {
   const db = new SupabaseService(c);
   const id = c.req.param("id");
-  const { name, genre, year, vote_average } = await c.req.json();
+  const { name, genre, year, voteAverage } = await c.req.json();
 
   const upddates: Record<string, any> = {};
   if (name) upddates.name = name;
   if (genre) upddates.genre = genre;
   if (year) upddates.year = year;
-  if (vote_average) upddates.vote_average = vote_average;
+  if (voteAverage) upddates.voteAverage = voteAverage;
 
   const { data, error } = await db.editData("tv_series", upddates, { id });
 
