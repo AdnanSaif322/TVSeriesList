@@ -19,6 +19,7 @@ const SeriesDetails: React.FC = () => {
         .then((data) => {
           setAnime(data);
           setError(null); // Clear any previous error
+          console.log(data);
         })
         .catch((err) => {
           console.error("Error fetching anime details:", err);
@@ -63,11 +64,14 @@ const SeriesDetails: React.FC = () => {
             <h1 className="text-2xl md:text-4xl font-bold">{anime.title}</h1>
             <p className="text-sm text-gray-400 mt-1">{anime.year}</p>
             <p className="mt-2 text-lg text-yellow-400">
-              {anime.voteAverage}% User Score
+              {anime.vote_average}% User Score
             </p>
             <p className="text-sm text-gray-300 mt-1">{anime.genre}</p>
             <p className="mt-4 text-gray-200">{anime.description}</p>
-            <p className="mt-4 text-gray-200">{anime.episodeCount} Episodes!</p>
+            <p className="mt-4 text-gray-200">Season: {anime.seasonCount}</p>
+            <p className="mt-4 text-gray-200">
+              Total: {anime.episodeCount} Episodes!
+            </p>
             <p className="mt-4 text-gray-200">Find More on</p>
             <div className="flex flex-wrap gap-4 mt-4">
               {/* Fandom Wiki Button */}

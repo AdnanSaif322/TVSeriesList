@@ -71,10 +71,11 @@ export interface AnimeDetails {
   title: string;
   imageUrl: string;
   genre: string;
-  voteAverage: number;
+  vote_average: number;
   year: number;
   description: string;
   cast: CastMember[];
   backgroundImageUrl: string;
   episodeCount: number;
+  seasonCount: number;
 }

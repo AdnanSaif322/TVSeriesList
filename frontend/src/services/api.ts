@@ -236,7 +236,7 @@ export const fetchAnimeDetailsByName = async (
     `${TMDB_BASE_URL}/tv/${seriesId}/credits?api_key=${TMDB_API_KEY}`
   );
   const creditsData = await creditsResponse.json();
-  console.log(creditsData.cast);
+  //console.log(creditsData.cast);
 
   // Map cast details
   const cast = creditsData.cast.slice(0, 18).map((member: any) => ({
@@ -248,6 +248,8 @@ export const fetchAnimeDetailsByName = async (
       : "https://via.placeholder.com/500x750?text=No+Image",
   }));
 
+  console.log("Details Data:", JSON.stringify(detailsData, null, 2));
+  const numberOfSeasons = detailsData.seasons.length;
   // Return the combined details
   return {
     title: detailsData.name,
@@ -255,11 +257,12 @@ export const fetchAnimeDetailsByName = async (
       ? `https://image.tmdb.org/t/p/w500${detailsData.poster_path}`
       : "https://via.placeholder.com/500x750?text=No+Image",
     genre: detailsData.genres.map((g: any) => g.name).join(", "),
-    voteAverage: detailsData.voteAverage,
+    vote_average: detailsData.vote_average,
     year: new Date(detailsData.first_air_date).getFullYear(),
     description: detailsData.overview,
     cast, // You can extend this to include cast data if needed
     backgroundImageUrl: `https://image.tmdb.org/t/p/w500${detailsData.backdrop_path}`,
     episodeCount: detailsData.number_of_episodes,
+    seasonCount: numberOfSeasons,
   };
 };
