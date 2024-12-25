@@ -22,3 +22,7 @@ src/
   ├── app.tsx              # Main app component
   ├── index.css            # Tailwind import and custom global styles
   ├── main.tsx             # Entry point for the app
+
+
+![firstImage](firstImage.png)
+![secondImage](secondImage.png)
