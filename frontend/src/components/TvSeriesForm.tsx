@@ -14,14 +14,18 @@ const TvSeriesForm: React.FC<Props> = ({
   const [searchResults, setSearchResults] = useState<TvSeriesSearchResult[]>(
     []
   );
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSearch = async (query: string) => {
     if (query.length > 2) {
+      setLoading(true); // Start loading
       try {
         const results = await searchTvSeries(query);
         setSearchResults(results);
       } catch (error) {
         console.error("Error fetching search results:", error);
+      } finally {
+        setLoading(false); // Stop loading
       }
     } else {
       setSearchResults([]);
@@ -32,11 +36,9 @@ const TvSeriesForm: React.FC<Props> = ({
     setName(result.name);
     setGenre(result.genre);
     setYear(Number(result.year));
-    setVoteAverage(
-      result.voteAverage ? Number(result.voteAverage) : (null as number | null)
-    );
+    setVoteAverage(result.voteAverage ?? null);
     setImageUrl(result.imageUrl);
-    setSearchResults([]);
+    setSearchResults([]); // Clear search results after selecting
   };
 
   return (
@@ -56,14 +58,18 @@ const TvSeriesForm: React.FC<Props> = ({
           required
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
         />
+        {loading && (
+          <div className="absolute left-0 right-0 mt-1">Loading...</div>
+        )}
         {searchResults.length > 0 && (
           <ul
             role="listbox"
+            aria-live="polite"
             className="absolute left-0 right-0 mt-1 bg-gray-800 text-white border border-gray-300 max-h-40 overflow-y-auto p-2 rounded-md shadow-lg"
           >
             {searchResults.map((result, index) => (
               <li
-                key={result.id || index} // Prefer `id` if available
+                key={result.id || index}
                 role="option"
                 onClick={() => handleSelectResult(result)}
                 className="cursor-pointer p-2 hover:bg-gray-700"

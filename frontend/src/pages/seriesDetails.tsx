@@ -3,11 +3,6 @@ import { useParams } from "react-router";
 import { fetchAnimeDetailsByName } from "../services/api"; // API call
 import { AnimeDetails, CastMember } from "../types/tvSeries"; // Types
 
-// export default function SeriesDetails() {
-//   const params = useParams();
-//   return <div>{params.name}</div>;
-// }
-
 const SeriesDetails: React.FC = () => {
   const { name } = useParams<{ name: string }>(); // Get series name from route
   const [anime, setAnime] = useState<AnimeDetails | null>(null);
@@ -35,6 +30,12 @@ const SeriesDetails: React.FC = () => {
   if (!anime) {
     return <div className="text-white text-center mt-10">Loading...</div>;
   }
+  const fandomUrl = `https://www.community.fandom.com/wiki/${encodeURIComponent(
+    anime.title
+  )}`;
+  const malUrl = `https://myanimelist.net/search/all?q=${encodeURIComponent(
+    anime.title
+  )}`;
 
   return (
     <div className="text-white">
@@ -76,9 +77,7 @@ const SeriesDetails: React.FC = () => {
             <div className="flex flex-wrap gap-4 mt-4">
               {/* Fandom Wiki Button */}
               <a
-                href={`https://www.community.fandom.com/wiki/${encodeURIComponent(
-                  anime.title
-                )}`}
+                href={fandomUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="custom-button px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-green-600"
@@ -88,9 +87,7 @@ const SeriesDetails: React.FC = () => {
 
               {/* MyAnimeList Button */}
               <a
-                href={`https://myanimelist.net/search/all?q=${encodeURIComponent(
-                  anime.title
-                )}`}
+                href={malUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="custom-button px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
