@@ -27,7 +27,6 @@ export interface Props {
   genre: string;
   year: number | null;
   voteAverage: number | null;
-  editingId: number | null;
   imageUrl: { [key: number]: string };
   setName: (name: string) => void;
   setGenre: (genre: string) => void;
@@ -40,7 +39,7 @@ export interface Props {
 export interface TvSeriesApiResult {
   id: number;
   name: string;
-  genre_ids: number[];
+  genres: string;
   first_air_date: string;
   voteAverage: number;
   imageUrl: string;
@@ -53,10 +52,12 @@ export interface Genre {
 }
 
 export interface AnimeCardProps {
+  id: number;
   title: string;
   imageUrl: string;
   genre: string;
   voteAverage: number;
+  handleDelete: (id: number) => void;
 }
 
 export interface CastMember {

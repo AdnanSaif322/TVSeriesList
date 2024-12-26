@@ -4,7 +4,6 @@ import { Props, TvSeriesSearchResult } from "../types/tvSeries";
 
 const TvSeriesForm: React.FC<Props> = ({
   name,
-  editingId,
   setName,
   setGenre,
   setYear,
@@ -75,7 +74,7 @@ const TvSeriesForm: React.FC<Props> = ({
         </ul>
       )}
 
-      <button type="submit">{editingId ? "Update" : "Add"}</button>
+      <button type="submit">Add</button>
     </form>
   );
 };

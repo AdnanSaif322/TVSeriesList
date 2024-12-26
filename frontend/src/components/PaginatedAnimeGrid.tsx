@@ -6,11 +6,13 @@ const ITEMS_PER_PAGE = 20;
 interface AnimeCardProps {
   flattenedSeries: TvSeries[];
   itemsPerPage?: number;
+  handleDelete: (id: number) => void;
 }
 
 export const PaginatedAnimeGrid = ({
   flattenedSeries,
   itemsPerPage = ITEMS_PER_PAGE,
+  handleDelete,
 }: AnimeCardProps) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -40,10 +42,12 @@ export const PaginatedAnimeGrid = ({
         {currentItems.map((series) => (
           <AnimeCard
             key={series.id}
+            id={series.id}
             title={series.name}
             imageUrl={series.imageUrl}
             genre={series.genre}
             voteAverage={series.voteAverage}
+            handleDelete={handleDelete} //pass handleDelete to animecard
           />
         ))}
       </div>

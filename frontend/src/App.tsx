@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 //import "./index.css";
-import {
-  fetchTvSeries,
-  addTvSeries,
-  updateTvSeries,
-  deleteTvSeries,
-} from "./services/api";
+import { fetchTvSeries, addTvSeries, deleteTvSeries } from "./services/api";
 import { TvSeries } from "./types/tvSeries";
 import TvSeriesForm from "./components/TvSeriesForm";
 import TvSeriesList from "./components/TvSeriesList";
@@ -18,7 +13,6 @@ function App() {
   const [year, setYear] = useState<number | null>(0);
   const [voteAverage, setVoteAverage] = useState<number | null>(null);
   const [imageUrl, setImageUrl] = useState<string>(""); // To store image URLs
-  const [editingId, setEditingId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchTvSeries()
@@ -40,6 +34,7 @@ function App() {
         setTvSeries([]);
       });
   }, []);
+
   console.log(tvSeries);
   if (tvSeries.length == 0) {
     return <div className="text-white text-center mt-10">Loading...</div>;
@@ -55,59 +50,31 @@ function App() {
     // console.log("Image URL:", imageUrl);
     const payload = { name, genre, year, voteAverage, imageUrl };
 
-    if (editingId !== null) {
-      updateTvSeries(editingId, payload) // Convert editingId to number
-        .then((updatedSeries) => {
-          setTvSeries((prev) =>
-            prev.map(
-              (series) =>
-                series.id === Number(editingId) ? updatedSeries : series // Ensure id comparison is number
-            )
-          );
-          resetForm();
-        })
-        .catch((error) => {
-          console.error("Error updating series:", error);
-          alert("Failed to update the series. Please try again.");
+    addTvSeries(payload)
+      .then((newSeries) => {
+        setTvSeries((prev) => [...prev, newSeries]);
+        Swal.fire({
+          title: "Success!",
+          text: "TV series added successfully!",
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 3000,
+          timerProgressBar: true,
         });
-    } else {
-      addTvSeries(payload)
-        .then((newSeries) => {
-          setTvSeries((prev) => [...prev, newSeries]);
-          Swal.fire({
-            title: "Success!",
-            text: "TV series added successfully!",
-            icon: "success",
-            confirmButtonText: "OK",
-            timer: 3000,
-            timerProgressBar: true,
-          });
-          resetForm();
-        })
-        .catch((error) => {
-          console.error("Error adding series:", error);
-          Swal.fire({
-            title: "Error!",
-            text: "Failed to add the series. Please try again.",
-            icon: "error",
-            confirmButtonText: "OK",
-            timer: 5000,
-            timerProgressBar: true,
-          });
+        resetForm();
+      })
+      .catch((error) => {
+        console.error("Error adding series:", error);
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to add the series. Please try again.",
+          icon: "error",
+          confirmButtonText: "OK",
+          timer: 5000,
+          timerProgressBar: true,
         });
-    }
+      });
   };
-
-  // const handleEdit = (series: TvSeries) => {
-  //   setEditingId(
-  //     typeof series.id === "string" ? parseInt(series.id, 10) : series.id
-  //   );
-  //   setName(series.name);
-  //   setGenre(series.genre);
-  //   setYear(
-  //     typeof series.year === "string" ? parseInt(series.year, 10) : series.year
-  //   );
-  // };
 
   const handleDelete = (id: number) => {
     Swal.fire({
@@ -147,7 +114,6 @@ function App() {
     setGenre("");
     setYear(0);
     setVoteAverage(0);
-    setEditingId(null);
     setImageUrl("");
   };
 
@@ -162,7 +128,6 @@ function App() {
           genre={genre}
           year={year}
           voteAverage={voteAverage}
-          editingId={editingId}
           setName={setName}
           setGenre={setGenre}
           imageUrl={imageUrl}
