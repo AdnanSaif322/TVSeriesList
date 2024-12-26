@@ -1,7 +1,7 @@
-// src/components/AnimeCard.tsx
 import React from "react";
 import { AnimeCardProps } from "../types/tvSeries";
 import { Link } from "react-router-dom";
+import { TrashIcon } from "@heroicons/react/24/outline";
 
 const AnimeCard: React.FC<AnimeCardProps> = ({
   id,
@@ -11,9 +11,23 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
   voteAverage,
   handleDelete,
 }) => {
+  const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation(); // Prevent navigation
+    handleDelete(id);
+  };
+
   return (
-    <Link to={`/series/${title}`} aria-label={`View details of ${title}`}>
-      <div className="w-80 h-96 rounded overflow-hidden shadow-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300">
+    <div className="w-80 h-96 rounded overflow-hidden shadow-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300 relative">
+      {/* Delete button positioned on top of the image */}
+      <button
+        onClick={handleDeleteClick} // Custom delete handler
+        className="absolute top-2 right-2 p-2 bg-gray-500 text-white rounded-full opacity-75 hover:bg-red-600 hover:opacity-100 transition-opacity duration-200"
+      >
+        <TrashIcon className="w-6 h-6" />
+      </button>
+
+      {/* Link to series details */}
+      <Link to={`/series/${title}`} aria-label={`View details of ${title}`}>
         <img
           className="w-full h-56 object-cover"
           src={imageUrl}
@@ -23,15 +37,9 @@ const AnimeCard: React.FC<AnimeCardProps> = ({
           <h2 className="text-xl text-white font-semibold">{title}</h2>
           <p className="text-sm text-gray-400">{genre}</p>
           <p className="text-sm text-yellow-400">{voteAverage.toFixed(1)}</p>
-          <button
-            onClick={() => handleDelete(id)} // Call handleDelete with the anime id
-            className="px-4 py-2 bg-red-500 text-white rounded"
-          >
-            Delete
-          </button>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 };
 

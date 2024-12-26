@@ -40,41 +40,47 @@ const TvSeriesForm: React.FC<Props> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => {
-          setName(e.target.value);
-          handleSearch(e.target.value); // Trigger search
-        }}
-        required
-      />
-      {searchResults.length > 0 && (
-        <ul
-          role="listbox"
-          style={{
-            border: "1px solid #ccc",
-            maxHeight: "150px",
-            overflowY: "auto",
-            padding: "10px",
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-2 items-center w-full max-w-sm mx-auto"
+    >
+      <div className="relative w-full">
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            handleSearch(e.target.value); // Trigger search
           }}
-        >
-          {searchResults.map((result, index) => (
-            <li
-              key={result.id || index} // Prefer `id` if available
-              role="option"
-              onClick={() => handleSelectResult(result)}
-              style={{ cursor: "pointer", padding: "5px", listStyle: "none" }}
-            >
-              {result.name} ({result.year})
-            </li>
-          ))}
-        </ul>
-      )}
+          required
+          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+        />
+        {searchResults.length > 0 && (
+          <ul
+            role="listbox"
+            className="absolute left-0 right-0 mt-1 bg-gray-800 text-white border border-gray-300 max-h-40 overflow-y-auto p-2 rounded-md shadow-lg"
+          >
+            {searchResults.map((result, index) => (
+              <li
+                key={result.id || index} // Prefer `id` if available
+                role="option"
+                onClick={() => handleSelectResult(result)}
+                className="cursor-pointer p-2 hover:bg-gray-700"
+              >
+                {result.name} ({result.year})
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
-      <button type="submit">Add</button>
+      <button
+        type="submit"
+        className="w-full p-3 bg-blue-500 text-white rounded-md mt-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+      >
+        Add
+      </button>
     </form>
   );
 };
