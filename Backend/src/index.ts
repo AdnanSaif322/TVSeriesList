@@ -3,6 +3,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import seriesController from "./controllers/series.js";
+import userController from "./controllers/user.js"; // Add user-related functionality
 
 const app = new Hono();
 
@@ -15,12 +16,18 @@ app.use(
   })
 );
 
+// Base route
 app.get("/", (c) => {
-  return c.json({ message: "Hello Hono!" });
+  return c.json({ message: "Welcome to the Hono API!" });
 });
 
+// Route for TV Series
 app.route("/series", seriesController);
-//server start
+
+// Route for User functionality (e.g., login, signup)
+app.route("/users", userController); // Add a new user controller for handling user-related operations
+
+// Start the server
 const port = 3000;
 console.log(`Server is running on http://localhost:${port}`);
 

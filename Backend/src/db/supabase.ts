@@ -1,5 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 
+interface GetDataQuery {
+  email?: string;
+  password?: string;
+  from?: number;
+  to?: number;
+}
+
 class SupabaseService {
   client;
 
@@ -16,15 +23,28 @@ class SupabaseService {
     this.client = createClient(SUPABASE_URL, SUPABASE_KEY);
   }
 
-  async getData(table: any, from = 0, to = 1000) {
-    const { data, error } = await this.client
-      .from(table)
-      .select("*")
-      .range(from, to);
-    if (error) {
-      throw error;
+  async getData(
+    table: any,
+    { email, password, from = 0, to = 1000 }: GetDataQuery
+  ) {
+    let query = this.client.from(table).select("*").range(from, to);
+
+    if (email) {
+      query = query.eq("email", email); // Filter by email
     }
-    return data;
+
+    if (password) {
+      query = query.eq("password", password); // Filter by password
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Error fetching data from Supabase:", error); // Log error for debugging
+      throw error; // Rethrow the error to be handled properly at the caller level
+    }
+
+    return { data, error };
   }
 
   async insertData(table: string, payload: Record<string, any>) {
