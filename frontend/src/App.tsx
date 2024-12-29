@@ -1,8 +1,12 @@
 import { Routes, Route, Link } from "react-router-dom";
 import AuthForm from "./components/AuthForm";
 import SeriesPage from "./pages/seriesPage";
+import ProtectedRoute from "./ProtectedRoute";
+import { useAuth } from "./AuthContext";
 
 function App() {
+  const { login, logout, isAuthenticated } = useAuth();
+
   return (
     <div className="flex flex-col items-center">
       <nav className="w-full p-4 bg-gray-800 text-white flex justify-center gap-4">
@@ -15,6 +19,14 @@ function App() {
         <Link to="/auth" className="hover:underline">
           Login / Register
         </Link>
+        {isAuthenticated && (
+          <button
+            onClick={logout}
+            className="hover:underline text-red-500 ml-4"
+          >
+            Logout
+          </button>
+        )}
       </nav>
       <div className="w-full p-4">
         <Routes>
@@ -36,7 +48,14 @@ function App() {
             }
           />
           <Route path="/auth" element={<AuthForm />} />
-          <Route path="/series" element={<SeriesPage />} />
+          <Route
+            path="/series"
+            element={
+              <ProtectedRoute>
+                <SeriesPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </div>
     </div>

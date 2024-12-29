@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import the useNavigate hook
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
+import Swal from "sweetalert2"; // Import SweetAlert2
 
 const AuthForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate(); // Initialize useNavigate hook
+  const { login } = useAuth();
 
   const handleAuth = async () => {
     const url = isLogin
@@ -17,35 +20,67 @@ const AuthForm = () => {
       body: JSON.stringify({ email, password }),
     });
     const data = await response.json();
-    if (response.ok) {
-      alert(isLogin ? "Login successful" : "Signup successful");
 
+    if (response.ok) {
+      // Show success alert with SweetAlert2
       if (isLogin) {
-        // After successful login, redirect to the SeriesPage
-        navigate("/series"); // Adjust the route as needed
+        login();
+        Swal.fire({
+          title: "Success!",
+          text: "Logged in successfully!",
+          icon: "success",
+          confirmButtonText: "OK",
+        }).then(() => {
+          navigate("/series"); // Redirect to SeriesPage after login
+        });
+      } else {
+        Swal.fire({
+          title: "Success!",
+          text: "Signup successful",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
       }
     } else {
-      alert(data.error || "An error occurred");
+      // Show error alert with SweetAlert2
+      Swal.fire({
+        title: "Error",
+        text: data.error || "An error occurred",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
   return (
-    <div>
-      <h2>{isLogin ? "Login" : "Sign Up"}</h2>
+    <div className="flex flex-col items-center">
+      <h2 className="text-xl font-bold mb-4">
+        {isLogin ? "Login" : "Sign Up"}
+      </h2>
       <input
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        className="mb-2 px-4 py-2 border border-gray-300 rounded"
       />
       <input
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        className="mb-2 px-4 py-2 border border-gray-300 rounded"
       />
-      <button onClick={handleAuth}>{isLogin ? "Login" : "Sign Up"}</button>
-      <button onClick={() => setIsLogin(!isLogin)}>
+      <button
+        onClick={handleAuth}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        {isLogin ? "Login" : "Sign Up"}
+      </button>
+      <button
+        onClick={() => setIsLogin(!isLogin)}
+        className="mt-4 text-blue-500 hover:underline"
+      >
         {isLogin ? "Switch to Sign Up" : "Switch to Login"}
       </button>
     </div>

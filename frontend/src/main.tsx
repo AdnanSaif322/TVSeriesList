@@ -4,21 +4,28 @@ import App from "./App";
 import SeriesDetails from "./pages/seriesDetails";
 import SeriesPage from "./pages/seriesPage";
 import AuthForm from "./components/AuthForm";
+import { AuthProvider } from "./AuthContext";
 import "./index.css";
+import React from "react";
 
 const root = document.getElementById("root");
 
 ReactDOM.createRoot(root as HTMLElement).render(
-  <BrowserRouter>
-    <Routes>
-      {/* Main app entry with navigation */}
-      <Route path="/" element={<App />} />
-      {/* TV series list page */}
-      <Route path="/series" element={<SeriesPage />} />
-      {/* TV series details page */}
-      <Route path="/series/:name" element={<SeriesDetails />} />
-      {/* Login and registration page */}
-      <Route path="/auth" element={<AuthForm />} />
-    </Routes>
-  </BrowserRouter>
+  <React.StrictMode>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Main app entry with navigation */}
+          <Route path="*" element={<App />}>
+            {/* TV series list page */}
+            <Route path="series" element={<SeriesPage />} />
+            {/* TV series details page */}
+            <Route path="series/:name" element={<SeriesDetails />} />
+            {/* Login and registration page */}
+            <Route path="auth" element={<AuthForm />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  </React.StrictMode>
 );
