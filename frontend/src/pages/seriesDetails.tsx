@@ -2,13 +2,33 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { fetchAnimeDetailsByName } from "../services/api"; // API call
 import { AnimeDetails, CastMember } from "../types/tvSeries"; // Types
+import { jwtDecode } from "jwt-decode"; // You can use jwt-decode package to decode JWT
 
 const SeriesDetails: React.FC = () => {
   const { name } = useParams<{ name: string }>(); // Get series name from route
   const [anime, setAnime] = useState<AnimeDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
+    // Function to get userId from JWT token stored in cookies
+    const getUserIdFromToken = () => {
+      const token = document.cookie
+        .split(";")
+        .find((cookie) => cookie.trim().startsWith("token="));
+      if (token) {
+        const tokenValue = token.split("=")[1];
+        try {
+          const decoded: any = jwtDecode(tokenValue); // Decode the token to get the userId
+          setUserId(decoded.userId); // Set userId to state
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      }
+    };
+
+    getUserIdFromToken();
+
     if (name) {
       fetchAnimeDetailsByName(name)
         .then((data) => {
@@ -30,6 +50,7 @@ const SeriesDetails: React.FC = () => {
   if (!anime) {
     return <div className="text-white text-center mt-10">Loading...</div>;
   }
+
   const fandomUrl = `https://www.community.fandom.com/wiki/${encodeURIComponent(
     anime.title
   )}`;
@@ -45,7 +66,7 @@ const SeriesDetails: React.FC = () => {
         style={{
           backgroundImage: `url(${anime.backgroundImageUrl})`,
           backgroundSize: "cover", // Ensures background image covers the area
-          backgroundPosition: "center", // Keeps the image centere
+          backgroundPosition: "center", // Keeps the image center
         }}
       >
         {/* Overlay */}

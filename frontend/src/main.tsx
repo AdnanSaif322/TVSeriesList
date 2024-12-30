@@ -1,7 +1,7 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom"; // Note: 'react-router-dom' for proper routing
 import App from "./App";
-import SeriesDetails from "./pages/seriesDetails";
+import SeriesDetails from "./pages/SeriesDetails";
 import SeriesPage from "./pages/seriesPage";
 import AuthForm from "./components/AuthForm";
 import { AuthProvider } from "./AuthContext";
